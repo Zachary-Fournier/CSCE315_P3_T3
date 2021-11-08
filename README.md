@@ -2,7 +2,7 @@
 webapp address: https://baszl.herokuapp.com/
 
 Run Django: pipenv shell
-	    python3 manage.py runserver
+	    python3 manage.py runserver 
 
 Run React: npm start
 
