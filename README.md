@@ -8,5 +8,15 @@ Run React: npm start
 
 
 Both work given the necessary tools are installed.
+Instabot Starter Code:
 
+from instabot import Bot
+
+bot = Bot()
+ 
+bot.login(username = xxxxx,
+          password = x)
+
+bot.upload_photo("xxxx.jpg",
+                 caption ="xxx")
 
