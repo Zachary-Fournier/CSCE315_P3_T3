@@ -15,6 +15,7 @@ from pathlib import Path
 import dj_database_url
 import os
 import psycopg2
+import django_heroku
 import whitenoise
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
