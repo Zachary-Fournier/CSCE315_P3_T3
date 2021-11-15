@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 # Heroku PSQL database
-import dj_database_url
+#import dj_database_url
 import os
 import psycopg2
 import django_heroku
@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'main.apps.MainConfig',
     'whitenoise.runserver_nostatic',
 ]
 
@@ -83,13 +84,17 @@ WSGI_APPLICATION = 'project3_backend.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'datp7km028qeoo',
+        'USER': 'nibyqvqqsevuoh',
+        'PASSWORD': 'd4a33f8e25969db60096a9cced25c1eceace8e906f0492553b79212d54ecd0e8',
+        'HOST': 'ec2-3-215-137-131.compute-1.amazonaws.com',
+        'PORT': '5432',
     }
 }
 
-db_from_env = dj_database_url.config(conn_max_age=600)
-DATABASES['default'].update(db_from_env)
+#db_from_env = dj_database_url.config(conn_max_age=600)
+#DATABASES['default'].update(db_from_env)
 
 
 # Password validation
