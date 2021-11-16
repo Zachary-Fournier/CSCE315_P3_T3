@@ -2,7 +2,7 @@
     "name": "baszl",
     "description": "A social media hub",
     "image": "heroku/python",
-    "repository": "https://github.com/heroku/python-getting-started",
+    "repository": "https://github.com/Zachary-Fournier/CSCE315_P3_T30",
     "keywords": ["python", "django" ],
     "addons": [ "heroku-postgresql" ]
 }

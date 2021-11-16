@@ -12,15 +12,23 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 # Heroku PSQL database
-#import dj_database_url
+import dj_database_url
+import dotenv
 import os
 import psycopg2
 import django_heroku
 import whitenoise
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+#BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# For switching between PSQL and SQLite
+dotenv_file = os.path.join(BASE_DIR, ".env")
+skipSSL = False
+if os.path.isfile(dotenv_file):
+    dotenv.load_dotenv(dotenv_file)
+    skipSSL = True
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
@@ -49,13 +57,13 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'project3_backend.urls'
@@ -82,19 +90,8 @@ WSGI_APPLICATION = 'project3_backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'datp7km028qeoo',
-        'USER': 'nibyqvqqsevuoh',
-        'PASSWORD': 'd4a33f8e25969db60096a9cced25c1eceace8e906f0492553b79212d54ecd0e8',
-        'HOST': 'ec2-3-215-137-131.compute-1.amazonaws.com',
-        'PORT': '5432',
-    }
-}
-
-#db_from_env = dj_database_url.config(conn_max_age=600)
-#DATABASES['default'].update(db_from_env)
+DATABASES = {}
+DATABASES['default'] = dj_database_url.config(conn_max_age=600)
 
 
 # Password validation
@@ -150,3 +147,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Configure for Heroku
 django_heroku.settings(locals())
+
+if skipSSL:
+    options = DATABASES['default'].get('OPTIONS', {})
+    options.pop('sslmode', None)
