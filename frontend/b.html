@@ -1,75 +1,39 @@
 <!DOCTYPE html>
-<html>
-
-<body>
-
-    <div class="container">
-        <div class="leftpane">
-            <img src="./t.jpg" / style="margin-left: -75px;">
-            <form>
-                <label for="uname">Username:</label><br>
-                <input type="text" id="uname" name="uname"><br>
-                <label for="pass">Password:</label><br>
-                <input type="text" id="pass" name="pass">
-            </form>
-        </div>
-        <div class="middlepane">
-            <img src="./f.jpg" / style="height: 50px; height: 210px; padding-top: 70px;">
-            <form>
-                <label for="uname">Username:</label><br>
-                <input type="text" id="uname" name="uname"><br>
-                <label for="pass">Password:</label><br>
-                <input type="text" id="pass" name="pass">
-            </form>
-        </div>
-        <div class="rightpane">
-            <img src="./i.jpg" / style="height: 360px; padding-top: 70px;">
-            <form>
-                <label for="uname">Username:</label><br>
-                <input type="text" id="uname" name="uname"><br>
-                <label for="pass">Password:</label><br>
-                <input type="text" id="pass" name="pass">
-            </form>
-        </div>
-        <style>
-            body,
-            html {
-                width: 100vw;
-                height: 100vh;
-                margin: 0;
-            }
-
-            .container {
-                width: 100vw;
-                height: 100vh;
-            }
-
-            .leftpane {
-                justify-content: first baseline;
-                width: 33.333vw;
-                height: 100vh;
-                float: left;
-                background-color: #2195de;
-                border-collapse: collapse;
-            }
-
-            .middlepane {
-                width: 33.333vw;
-                height: 100vh;
-                float: left;
-                background-color: #4867a8;
-                border-collapse: collapse;
-            }
-
-            .rightpane {
-                width: 33.333vw;
-                height: 100vh;
-                position: relative;
-                float: right;
-                border-collapse: collapse;
-            }
-        </style>
-    </div>
-</body>
-
+<html lang="eng">
+    <link rel="stylesheet" href="style.css">
+    <body>
+        <section id = "Twitter">
+            <img class = "bird" src="twitterbird.png" alt="Twitter" width="350">
+            <div id = "twitteruser">
+                <label for="twitterusername">Username: </label>
+                <input type="text" id="twitterusername" name="twitterusername">
+             </div>
+             <div id = twitterpass>
+                <label for="twitterpassword">Password: </label>
+                <input type="password" id="twitterpassword" name="twitterpassword">
+             </div>
+        </section>
+        <section id = "Facebook">
+            <img class = "fb" src="facebook_logo.png" alt="Facebook" width="250">
+            <div id = "fbuser">
+                <label for="fbusername">Username: </label>
+                <input type="text" id="fbusername" name="fbusername">
+             </div>
+             <div id = fbpass>
+                <label for="fbpassword">Password: </label>
+                <input type="password" id="fbpassword" name="fbpassword">
+             </div>
+        </section>
+        <section id = "Instagram">
+            <img class = "insta" src="instalogo.png" alt="Instagram" width="200" >
+            <div id = "instauser">
+                <label for="instausername">Username: </label>
+                <input type="text" id="instausername" name="instausername">
+             </div>
+             <div id = instapass>
+                <label for="instapassword">Password: </label>
+                <input type="password" id="instapassword" name="instapassword">
+             </div>
+        </section>
+    </body>
 </html>
