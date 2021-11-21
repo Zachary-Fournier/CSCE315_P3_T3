@@ -53,6 +53,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'main.apps.MainConfig',
     'whitenoise.runserver_nostatic',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.facebook',
+    'allauth.socialaccount.providers.twitter',
+    'allauth.socialaccount.providers.instagram',
 ]
 
 MIDDLEWARE = [
@@ -67,6 +74,45 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'project3_backend.urls'
+
+AUTHENTICATION_BACKENDS = (
+    'allauth.account.auth_backends.AuthenticationBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+SOCIALACCOUNT_PROVIDERS = \
+    {'facebook':
+       {'METHOD': 'oauth2',
+        'SCOPE': ['email','public_profile', 'user_friends'],
+        'AUTH_PARAMS': {'auth_type': 'reauthenticate'},
+        'FIELDS': [
+            'id',
+            'email',
+            'name',
+            'first_name',
+            'last_name',
+            'verified',
+            'locale',
+            'timezone',
+            'link',
+            'gender',
+            'updated_time'],
+        'EXCHANGE_TOKEN': True,
+        'LOCALE_FUNC': lambda request: 'kr_KR',
+        'VERIFIED_EMAIL': False,
+        'VERSION': 'v2.4'}}
+
+#facebook
+SOCIAL_AUTH_FACEBOOK_KEY = '628039024905744'  # App ID
+SOCIAL_AUTH_FACEBOOK_SECRET ='a69b797183142395f95009edc4010bcd' #app key
+
+LOGIN_REDIRECT_URL = "/"
+
+#site id
+SITE_ID = 1 # for the dev mode, you need to use localhost's id facebook does not support the name 127.0.0.1:8000
+
+ACCOUNT_EMAIL_REQUIRED=True
+ACCOUNT_USERNAME_REQURIED=True
 
 TEMPLATES = [
     {
@@ -90,9 +136,18 @@ WSGI_APPLICATION = 'project3_backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-DATABASES = {}
-DATABASES['default'] = dj_database_url.config(conn_max_age=600)
-
+#DATABASES = {}
+#DATABASES['default'] = dj_database_url.config(conn_max_age=600)
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2', 
+        'NAME': 'datp7km028qeoo',                     
+        'USER': 'nibyqvqqsevuoh',
+        'PASSWORD': 'd4a33f8e25969db60096a9cced25c1eceace8e906f0492553b79212d54ecd0e8',
+        'HOST': 'ec2-3-215-137-131.compute-1.amazonaws.com', # Or something like this
+        'PORT': '5432',                     
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
