@@ -25,6 +25,7 @@
                 <a href="{% url 'account_logout' %}" class="btn btn-danger">Logout</a>
             {% else %}
                 <a href="{% provider_login_url "facebook" method="js_sdk" %}"><img class = "fb" src="facebook_logo.png" alt="Facebook" width="250"></a>
+             {% endif %}
             <!--<img class = "fb" src="facebook_logo.png" alt="Facebook" width="250">-->
             <!--
             <div id = "fbuser">
