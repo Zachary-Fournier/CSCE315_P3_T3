@@ -266,7 +266,7 @@ SOCIAL_AUTH_FACEBOOK_SECRET ='a69b797183142395f95009edc4010bcd' #app key
 LOGIN_REDIRECT_URL = "/"
 
 #site id
-SITE_ID = 1 # for the dev mode, you need to use localhost's id facebook does not support the name 127.0.0.1:8000
+SITE_ID = 2 # for the dev mode, you need to use localhost's id facebook does not support the name 127.0.0.1:8000
 
 ACCOUNT_EMAIL_REQUIRED=True
 ACCOUNT_USERNAME_REQURIED=True
