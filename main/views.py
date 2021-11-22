@@ -11,3 +11,6 @@ def test(response, nm):
 
 def home(response):
     return render(response, "main/home.html", {"name":"Baszl"})
+
+def dashboard(response):
+    return render(response, "main/dashboard.html")

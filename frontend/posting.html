@@ -8,6 +8,12 @@
         for (var i = 0; i < cards.length; i++) {
             if (cards[i].css('background-color') == 'rgb(255,255,255)') cards[i].style.backgroundColor = 'blue';
         }
+
+        const post = function() {
+            var words = document.querySelector("#postText").value;
+            console.log(window.location.href += "/" + toString(words));
+            window.location.href += "/" + toString(words);
+        }
     }
 </script>
 <html lang="en">
