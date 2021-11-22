@@ -34,7 +34,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('register/', v.register, name="register"), 
     path('', include("main.urls")),
-    url(r'^accounts/',include('allauth.urls')),
+    url('accounts/',include('allauth.urls')),
 ]
 
 urlpatterns += staticfiles_urlpatterns()
