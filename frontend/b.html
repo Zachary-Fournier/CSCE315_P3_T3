@@ -1,5 +1,3 @@
-{% load socialaccount %}
-{% providers_media_js %}
 <!DOCTYPE html>
 <html lang="eng">
     <div id="fb-root"></div>
@@ -19,17 +17,7 @@
              </div>
         </section>
         <section id = "Facebook">
-<<<<<<< HEAD
-            <a href="{% provider_login_url "facebook" method="js_sdk" %}"><img class = "fb" src="facebook_logo.png" alt="Facebook" width="250"></a>
-=======
-            {% if user.is_authenticated %}
-                <h3>Welcome {{ user.username }} !!!</h3>
-                <br /><br />
-                <a href="{% url 'account_logout' %}" class="btn btn-danger">Logout</a>
-            {% else %}
-                <a href="{% provider_login_url "facebook" method="js_sdk" %}"><img class = "fb" src="facebook_logo.png" alt="Facebook" width="250"></a>
->>>>>>> 630b0032fcc183f9dd4a553921dc8afa781213b9
-            <!--<img class = "fb" src="facebook_logo.png" alt="Facebook" width="250">-->
+            <img class = "fb" src="facebook_logo.png" alt="Facebook" width="250">
             <!--
             <div id = "fbuser">
                 <label for="fbusername">Username: </label>
@@ -43,7 +31,7 @@
                 </a>
              </div>
              -->
-             <!--<div class="fb-login-button" data-width="" data-size="large" data-button-type="login_with" data-layout="rounded" data-auto-logout-link="false" data-use-continue-as="false"></div>-->
+             <div class="fb-login-button" data-width="" data-size="large" data-button-type="login_with" data-layout="rounded" data-auto-logout-link="false" data-use-continue-as="false"></div>
         </section>
         <section id = "Instagram">
             <img class = "insta" src="instalogo.png" alt="Instagram" width="200" >
