@@ -63,3 +63,28 @@ body {
 .fb-login-button {
     margin-top: 80px;
 }
+
+
+
+
+section {
+    float:left;
+    width: 33.33%;
+    height: 100vh;
+    text-align: center;
+}
+
+
+
+#twitterlogin img{
+    vertical-align: middle;
+}
+
+#instalogin {
+    margin-top: 80px;
+}
+#instalogin img{
+    vertical-align: middle;
+    margin-right: 5px;
+    padding: 2px;
+}
