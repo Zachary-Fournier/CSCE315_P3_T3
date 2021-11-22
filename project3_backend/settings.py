@@ -423,4 +423,4 @@ django_heroku.settings(locals())
 if skipSSL:
     options = DATABASES['default'].get('OPTIONS', {})
     options.pop('sslmode', None)
->>>>>>> 630b0032fcc183f9dd4a553921dc8afa781213b9
+
