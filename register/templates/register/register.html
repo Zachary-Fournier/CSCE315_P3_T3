@@ -1,8 +1,6 @@
 {% extends 'main/base.html' %}
 
-{% block headInfo %}{% endblock %}
-
-{% block content %}
+{% block loginHTML %}
     <form method="POST" class="form-group">
         {% csrf_token %}
         {{form}}

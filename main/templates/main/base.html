@@ -6,8 +6,13 @@
         {% endblock %}
     </head>
     <body>
-        {% block content %}
-        Howdy
-        {% endblock %}
+        {% if user.is_authenticated %}
+            {% block content %}
+            {% endblock %}
+        {% else %}
+            {% block loginHTML %}
+            <p>Login <a href="/login">Here</a></p>
+            {% endblock %}
+        {% endif %}
     </body>
 </html>
