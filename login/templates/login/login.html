@@ -1,0 +1,57 @@
+{% extends 'main/base.html' %}
+
+{% block headInfo %}
+<link rel="stylesheet" type="text/css" href="/static/login_html.css">
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@500&display=swap" rel="stylesheet">
+<script>
+    var wait = setInterval(() => {
+        var usernames = document.querySelectorAll("#id_username");
+        var email = document.querySelector("#id_email");
+        var password = document.querySelector("#id_password");
+        var pass1 = document.querySelector("#id_password1");
+        var pass2 = document.querySelector("#id_password2");
+        if (usernames != null && password != null && pass1 != null && pass2 != null) {
+            password.setAttribute("placeholder", "Password");
+            email.setAttribute("placeholder", "Email");
+            pass1.setAttribute("placeholder", "Password");
+            pass2.setAttribute("placeholder", "Re-enter Password");
+            usernames.forEach((input) => {
+                input.setAttribute("placeholder", "Username");
+            })
+            window.clearInterval(wait);
+        }
+    }, 250);
+</script>
+{% endblock %}
+
+{% block loginHTML %}
+<h1 class="appName"> BASZL </h1>
+<div class="main">
+    <input type="checkbox" id="chk" aria-hidden="true">
+
+    <div class="login">
+        <form method="POST" action="/login/">
+            <label for="chk" aria-hidden="true">Login</label>
+            {% csrf_token %}
+            {{form.username}}
+            {{form.password}}
+            <button type="submit">Login</button>
+            {% if errorMsg != "" %}
+                <div class="errorMsg">{{errorMsg}}</div>
+            {% endif %}
+        </form>
+    </div>
+
+    <div class="signup">
+        <form method="POST" action="/register/">
+            <label for="chk" aria-hidden="true">Sign Up</label>
+            {% csrf_token %}
+            {{rform.username}}
+            {{rform.email}}
+            {{rform.password1}}
+            {{rform.password2}}
+            <button type="submit">Sign Up</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

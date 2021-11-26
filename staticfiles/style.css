@@ -3,7 +3,12 @@ section {
     width: 33.33%;
     height: 100vh;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
 }
+
 #Twitter {
     background: #1DA1F2;
 }
@@ -49,7 +54,6 @@ body {
     margin-left: auto;
     margin-right: auto;
     margin-top: 120px;
-    display: flex;
 }
 
 #fbuser {
@@ -62,4 +66,18 @@ body {
 
 .fb-login-button {
     margin-top: 80px;
+}
+
+#twitterlogin img{
+    vertical-align: middle;
+}
+
+#instalogin {
+    margin-top: 80px;
+}
+
+#instalogin img{
+    vertical-align: middle;
+    margin-right: 5px;
+    padding: 2px;
 }
