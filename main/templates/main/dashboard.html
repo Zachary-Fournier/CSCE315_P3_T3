@@ -89,7 +89,7 @@
                     <div class="list-group">
                         <button onClick="switchTheme()" id="switchThemes" class="list-group-item list-group-item-action">
                             <div class="d-flex align-items-center pb-1" id="tooltips-container">
-                                <img src="night-mode.png" class="rounded-circle img-fluid avatar-md img-thumbnail bg-transparent" alt="">
+                                <img src="/static/night-mode.png" class="rounded-circle img-fluid avatar-md img-thumbnail bg-transparent" alt="">
                                 <div class="w-100 ms-2">
                                     <h5 class="mb-1">Switch Themes</h5>
                                     <p class="mb-0 font-13 text-muted">Current: Light Mode</p>
@@ -99,7 +99,7 @@
                         </button>
                         <a href="#" class="list-group-item list-group-item-action">
                             <div class="d-flex align-items-center pb-1" id="tooltips-container">
-                                <img src="Aa.png" class="rounded-circle img-fluid avatar-md img-thumbnail bg-transparent" alt="">
+                                <img src="/static/Aa.png" class="rounded-circle img-fluid avatar-md img-thumbnail bg-transparent" alt="">
                                 <div class="w-100 ms-2">
                                     <h5 class="mb-1">Switch Font Size</h5>
                                     <p class="mb-0 font-13 text-muted">Current: Regular Font</p>
@@ -116,25 +116,26 @@
             <div class="card">
                 <div class="card-body">
                     <!-- comment box -->
-                    <form action="#" class="comment-area-box mb-3">
+                    <form method="POST" action="makePost/" class="comment-area-box mb-3">
+                        {% csrf_token %}
                         <span class="input-icon">
-                            <textarea id="postText" rows="3" class="form-control" placeholder="Write something..."></textarea>
+                            <textarea name="postText" value="post" id="postText" rows="3" class="form-control" placeholder="Write something..."></textarea>
                         </span>
                         <div class="comment-area-btn">
                             <div class="float-end">
-                                <button type="submit" class="btn btn-sm btn-dark waves-effect waves-light">Post</button>
+                                <button type="submit" name="postBtn" value="post" class="btn btn-sm btn-dark waves-effect waves-light">Post</button>
                             </div>
                             <div>
                                 <label class="switch">
-                                    <input type="checkbox" id="togBtn">
+                                    <input name="facebook" value="checked" type="checkbox" id="togBtn">
                                     <div class="slider round"></div>
                                 </label>
                                 <label class="switch">
-                                    <input type="checkbox" id="togBtn">
+                                    <input name="twitter" value="checked" type="checkbox" id="togBtn">
                                     <div class="slidert round"></div>
                                 </label>
                                 <label class="switch">
-                                    <input type="checkbox" id="togBtn">
+                                    <input name="instagram" value="checked" type="checkbox" id="togBtn">
                                     <div class="slideri round"></div>
                                 </label>
                             </div>

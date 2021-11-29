@@ -5,5 +5,5 @@ urlpatterns = [
     path("<int:nm>", views.test, name="test"),
     path("", views.home, name="home"),
     path("platformsLogin/", views.platformsLogin, name="platformsLogin"),
-    path("dashboard/<str:message>", views.makePost, name="makePost"),
+    path("makePost/", views.makePost, name="makePost"),
 ]
