@@ -1,18 +1,37 @@
-<!DOCTYPE html>
-<html lang="en_US">
-    <head>
-        <title>BASZL</title>
-        {% block headInfo %}
-        {% endblock %}
-    </head>
-    <body>
-        {% if user.is_authenticated %}
-            {% block content %}
-            {% endblock %}
-        {% else %}
-            {% block loginHTML %}
-            <p>Login <a href="/login">Here</a></p>
-            {% endblock %}
-        {% endif %}
-    </body>
-</html>
+{% extends 'main/structure.html' %}
+
+{% block navBar %}
+<style>
+nav {
+    width: 100%;
+    background: linear-gradient(to bottom,white, lightgray, rgb(123, 123, 123));
+    height: 35px;
+    margin-bottom: 25px;
+}
+ul {
+    display: block;
+    position: relative;
+    width: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+}
+nav ul {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    list-style-type: none;
+}
+nav a {
+    text-decoration: none;
+    color: white;
+}
+</style>
+<nav>
+    <ul>
+        <li><a href="/">BASZL</a></li>
+        <li><a href="platformsLogin/">Platforms</a></li>
+        <li><a href="/">Account</a></li>
+        <li><a href="/logout/">Logout</a></li>
+    </ul>
+</nav>
+{% endblock %}

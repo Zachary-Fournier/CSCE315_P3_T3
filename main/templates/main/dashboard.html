@@ -1,9 +1,169 @@
 {% extends 'main/base.html' %}
 
 {% block headInfo %}
+<meta charset="utf-8">
+<!--  This file has been downloaded from bootdey.com @bootdey on twitter -->
+<!--  All snippets are MIT license http://bootdey.com/license -->
+<title>bs5 profile content - Bootdey.com</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/5.3.45/css/materialdesignicons.css" integrity="sha256-NAxhqDvtY0l4xn+YVa6WjAcmd94NNfttjNsDmNatFVc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="/static/posting.css">
+<script> 
+    function switchTheme() {
+        var bg = document.body;
+        bg.classList.toggle("dark-mode");
 
+        cards = document.getElementsByClassName("card");
+        for (var i = 0; i < cards.length; i++) {
+            if (cards[i].css('background-color') == 'rgb(255,255,255)') cards[i].style.backgroundColor = 'blue';
+        }
+    }
+</script>
 {% endblock %}
 
 {% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-xl-5">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex align-items-start">
+                        <img src="https://bootdey.com/img/Content/avatar/avatar1.png" class="rounded-circle avatar-lg img-thumbnail" alt="profile-image">
+                        <div class="w-100 ms-3">
+                            <h4 class="my-0">Geneva McKnight</h4>
+                            <p class="text-muted">@webdesigner</p>
+                        </div>
+                    </div>
 
+                    <div class="mt-3">
+                        <h4 class="font-13 text-uppercase">About Me :</h4>
+                        <p class="text-muted font-13 mb-3">
+                            Hi I'm Johnathn Deo,has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type.
+                        </p>
+                        <p class="text-muted mb-2 font-13"><strong>Twitter Handle:</strong> <span class="ms-2">@benson</span></p>
+                        <p class="text-muted mb-2 font-13"><strong>Instagram Handle: </strong><span class="ms-2">@benson</span></p>
+                        <p class="text-muted mb-2 font-13"><strong>Facebook Handle: </strong> <span class="ms-2">@benson</span></p>
+                    </div>                                    
+
+                    <ul class="social-list list-inline mt-3 mb-0">
+                        <li class="list-inline-item">
+                            <a href="javascript: void(0);" class="social-list-item text-center border-primary text-primary"><i class="mdi mdi-facebook"></i></a>
+                        </li>
+                        <li class="list-inline-item">
+                            <a href="javascript: void(0);" class="social-list-item text-center border-danger text-danger"><i class="mdi mdi-instagram"></i></a>
+                        </li>
+                        <li class="list-inline-item">
+                            <a href="javascript: void(0);" class="social-list-item text-center border-info text-info"><i class="mdi mdi-twitter"></i></a>
+                        </li>
+                    </ul>   
+                </div>                                 
+            </div> <!-- end card -->
+
+            <div class="card" style = "padding-top:20px;">
+                <center> <h3> Number of Posts </h3> </center>
+                <div class="card-body text-center">
+                    <div class="row">
+                        <div class="col-4 border-end border-light">
+                            <h5 class="text-muted mt-1 mb-2 fw-normal">Facebook</h5>
+                            <h2 class="mb-0 fw-bold">116</h2>
+                        </div>
+                        <div class="col-4 border-end border-light">
+                            <h5 class="text-muted mt-1 mb-2 fw-normal">Instagram</h5>
+                            <h2 class="mb-0 fw-bold">87</h2>
+                        </div>
+                        <div class="col-4">
+                            <h5 class="text-muted mt-1 mb-2 fw-normal">Twitter</h5>
+                            <h2 class="mb-0 fw-bold">98</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+
+                    <h4 class="header-title mb-3">Settings ⚙</h4>
+
+                    <div class="list-group">
+                        <button onClick="switchTheme()" id="switchThemes" class="list-group-item list-group-item-action">
+                            <div class="d-flex align-items-center pb-1" id="tooltips-container">
+                                <img src="night-mode.png" class="rounded-circle img-fluid avatar-md img-thumbnail bg-transparent" alt="">
+                                <div class="w-100 ms-2">
+                                    <h5 class="mb-1">Switch Themes</h5>
+                                    <p class="mb-0 font-13 text-muted">Current: Light Mode</p>
+                                </div>
+                                <i class="mdi mdi-chevron-right h2"></i>
+                            </div>
+                        </button>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <div class="d-flex align-items-center pb-1" id="tooltips-container">
+                                <img src="Aa.png" class="rounded-circle img-fluid avatar-md img-thumbnail bg-transparent" alt="">
+                                <div class="w-100 ms-2">
+                                    <h5 class="mb-1">Switch Font Size</h5>
+                                    <p class="mb-0 font-13 text-muted">Current: Regular Font</p>
+                                </div>
+                                <i class="mdi mdi-chevron-right h2"></i>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div> <!-- end col-->
+
+        <div class="col-xl-7">
+            <div class="card">
+                <div class="card-body">
+                    <!-- comment box -->
+                    <form action="#" class="comment-area-box mb-3">
+                        <span class="input-icon">
+                            <textarea id="postText" rows="3" class="form-control" placeholder="Write something..."></textarea>
+                        </span>
+                        <div class="comment-area-btn">
+                            <div class="float-end">
+                                <button type="submit" class="btn btn-sm btn-dark waves-effect waves-light">Post</button>
+                            </div>
+                            <div>
+                                <label class="switch">
+                                    <input type="checkbox" id="togBtn">
+                                    <div class="slider round"></div>
+                                </label>
+                                <label class="switch">
+                                    <input type="checkbox" id="togBtn">
+                                    <div class="slidert round"></div>
+                                </label>
+                                <label class="switch">
+                                    <input type="checkbox" id="togBtn">
+                                    <div class="slideri round"></div>
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- end comment box -->
+
+                    <!-- Story Box-->
+                    <div class="border border-light p-2 mb-3">
+                        <div class="d-flex align-items-start">
+                            <img class="me-2 avatar-sm rounded-circle" src="https://bootdey.com/img/Content/avatar/avatar4.png" alt="Generic placeholder image">
+                            <div class="w-100">
+                                <h5 class="">Thelma Fridley <small class="text-muted"> 1 hour ago</small></h5>
+                                <div class="">
+                                    Cras sit amet nibh libero, in
+                                    gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras
+                                    purus odio, vestibulum in vulputate at, tempus viverra turpis. Duis
+                                    sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper
+                                    porta. Mauris massa.
+                                    <br>
+                                    <a href="javascript: void(0);" class="text-muted font-13 d-inline-block mt-2"><i class="mdi mdi-reply"></i> Reply</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div> 
+
+        </div> <!-- end col -->
+    </div>
+    <!-- end row-->
+
+</div>
 {% endblock %}

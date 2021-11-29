@@ -14,7 +14,7 @@ def register(request):
             form.save()
             user = authenticate(request, username=request.POST['username'], password=request.POST['password1'])
             login(request, user)
-            return redirect("/")
+            return redirect("/platformsLogin/")
         else:
             form = RegisterForm()
     else:

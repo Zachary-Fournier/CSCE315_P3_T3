@@ -15,14 +15,18 @@ def home(request):
     if not request.user.is_authenticated:
         return HttpResponseRedirect("/login/")
 
-    return render(request, "main/home.html", {"name":"Baszl"})
+    return render(request, "main/dashboard.html", {})
         
 
-def dashboard(request):
+def platformsLogin(request):
     if not request.user.is_authenticated:
         return HttpResponseRedirect("/login/")
 
-    return render(request, "main/dashboard.html")
+    return render(request, "main/platformsLogin.html", {})
 
-def makePost(request):
-    return HttpResponse("<h1>Howdy</h1>")
+def makePost(request, message):
+    if request.user.is_authenticated:
+        # Do something
+        return HttpResponse(str(message))
+    else:
+        return HttpResponse("You are not authorized for this activity")

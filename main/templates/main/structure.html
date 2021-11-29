@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en_US">
+    <head>
+        <title>{% block title %}BASZL{% endblock %}</title>
+        {% block headInfo %}
+        {% endblock %}
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                margin: 0;
+                padding: 0;
+            }
+        </style>
+    </head>
+    <body>
+        {% if user.is_authenticated %}
+            {% block navBar %}
+            {% endblock %}
+            {% block content %}
+            {% endblock %}
+        {% else %}
+            {% block loginHTML %}
+            <p>Login <a href="/login">Here</a></p>
+            {% endblock %}
+        {% endif %}
+    </body>
+</html>
