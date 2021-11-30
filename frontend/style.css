@@ -64,18 +64,6 @@ body {
     margin-top: 80px;
 }
 
-
-
-
-section {
-    float:left;
-    width: 33.33%;
-    height: 100vh;
-    text-align: center;
-}
-
-
-
 #twitterlogin img{
     vertical-align: middle;
 }
