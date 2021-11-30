@@ -13,11 +13,12 @@ def test(request, nm):
 
 def home(request):
     twtHandle=igHandle=fbHandle = "Not Connected"
+    fbPosts=igPosts=twtPosts = 0
 
     if not request.user.is_authenticated:
         return HttpResponseRedirect("/login/")
 
-    return render(request, "main/dashboard.html", {"twtHandle":twtHandle, "igHandle":igHandle, "fbHandle":fbHandle})
+    return render(request, "main/dashboard.html", {"twtHandle":twtHandle, "igHandle":igHandle, "fbHandle":fbHandle, "numFbPosts":fbPosts, "numIgPosts":igPosts, "numTwtPosts":twtPosts})
         
 
 def platformsLogin(request):
