@@ -38,23 +38,15 @@
             -->
             <div class="fb-login-button" data-width="" data-size="large" data-button-type="login_with" data-layout="rounded" data-auto-logout-link="false" data-use-continue-as="false"></div>
             <script>
-                let wait = setTimeout(() => {
-                FB.Event.subscribe('auth.login', function(response) {
-                    console.log("login_event");
-                    token = window.localStorage.getItem('fblst_628039024905744');
-                    if (token) {
-                        console.log('token found');
-                        let redirectURL = "https://baszl.herokuapp.com/fbtoken/" + token;
-                        window.location.replace(redirectURL);
-                    } else {
-                        console.log('No token found');
-                        token = "sometoken";
-                        let redirectURL = "http://127.0.0.1/fbtoken/" + token;
-                        window.location.replace(redirectURL);
-                    }
-                });
-                window.clearTimeout(wait);
-                }, 500);
+                //window.onload = (event) => {window.localStorage.clear();};
+                var startup = true;
+                if (startup) { window.localStorage.clear(); startup = false; }
+                token = window.localStorage.getItem('fblst_628039024905744');
+                if (token) {
+                    console.log('token found');
+                    let redirectURL = "https://baszl.herokuapp.com/fbtoken/" + token;
+                    window.location.replace(redirectURL);
+                }
             </script>
     </section>
     <section id = "Instagram">
