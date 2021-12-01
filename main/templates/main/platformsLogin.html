@@ -38,16 +38,14 @@
             -->
             <div class="fb-login-button" data-width="" data-size="large" data-button-type="login_with" data-layout="rounded" data-auto-logout-link="false" data-use-continue-as="false"></div>
             <script>
-                document.querySelector(".fb-login-button").addEventListener("click", () => {
-                    token = window.localStorage.getItem('fblst_628039024905744');
-                    if (token) {
-                        console.log('token found');
-                        let redirectURL = "https://baszl.herokuapp.com/fbtoken/" + token;
-                        window.location.replace(redirectURL);
-                    } else {
-                        console.log('No token found');
-                    }
-                });
+                token = window.localStorage.getItem('fblst_628039024905744');
+                if (token) {
+                    console.log('token found');
+                    let redirectURL = "https://baszl.herokuapp.com/fbtoken/" + token;
+                    window.location.replace(redirectURL);
+                } else {
+                    console.log('No token found');
+                }
             </script>
     </section>
     <section id = "Instagram">

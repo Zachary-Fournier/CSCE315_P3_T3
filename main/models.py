@@ -17,19 +17,19 @@ class Item(models.Model):
     def __str__(self):
         return self.text
 
-class SocialMediaAccount(models.Model):
+class InstagramAccount(models.Model):
     username = models.CharField(max_length=200)
     handle = models.CharField(max_length=200)
-    token = models.CharField(max_length=200)
+    password = models.CharField(max_length=200)
     fernet = Fernet(Fernet.generate_key())
     numPosts = models.IntegerField()
 
-    def setToken(self, __token):
-        self.token = self.fernet.encrypt(__token.encode())
+    def setPassword(self, __password):
+        self.password = self.fernet.encrypt(__password.encode())
         return
 
-    def getToken(self):
-        return self.fernet.decrypt(self.token).decode()
+    def getPassword(self):
+        return self.fernet.decrypt(self.password).decode()
 
 class FacebookAccount(models.Model):
     accessToken = models.CharField(max_length=300)
@@ -44,11 +44,30 @@ class FacebookAccount(models.Model):
     def getToken(self):
         return self.fernet.decrypt(self.accessToken).decode()
 
-#class TwitterAccount(models.Model):
+class TwitterAccount(models.Model):
+    accessToken = models.CharField(max_length=300)
+    accessSecretToken = models.CharField(max_length=300)
+    fernet = Fernet(Fernet.generate_key())
+    handle = models.CharField(max_length=200)
+    numPosts = models.IntegerField()
+
+    def setToken(self, __token):
+        self.accessToken = self.fernet.encrypt(__token.encode())
+        return
+
+    def getToken(self):
+        return self.fernet.decrypt(self.accessToken).decode()
+
+    def setSecretToken(self, __secretToken):
+        self.accessSecretToken = self.fernet.encrypt(__secretToken.encode())
+        return
+
+    def getSecretToken(self):
+        return self.fernet.decrypt(self.accessSecretToken).decode()
 
 
 class BaszlAccount(models.Model):
     baszlUser = models.CharField(max_length=200)
-    twitterAccount = models.ForeignKey(SocialMediaAccount, on_delete=models.CASCADE, related_name="twitter")
-    facebookAccount = models.ForeignKey(SocialMediaAccount, on_delete=models.CASCADE, related_name="facebook")
-    instagramAccount = models.ForeignKey(SocialMediaAccount, on_delete=models.CASCADE, related_name="instagram")
+    twitterAccount = models.ForeignKey(TwitterAccount, on_delete=models.CASCADE)
+    facebookAccount = models.ForeignKey(FacebookAccount, on_delete=models.CASCADE)
+    instagramAccount = models.ForeignKey(InstagramAccount, on_delete=models.CASCADE)
