@@ -41,11 +41,14 @@
                 //window.onload = (event) => {window.localStorage.clear();};
                 var startup = true;
                 if (startup) { window.localStorage.clear(); startup = false; }
-                token = window.localStorage.getItem('fblst_628039024905744');
-                if (token) {
-                    console.log('token found');
-                    let redirectURL = "https://baszl.herokuapp.com/fbtoken/" + token;
-                    window.location.replace(redirectURL);
+                window.onclick = (event) => { checkFB(); }
+                const checkFB = function() {
+                    token = window.localStorage.getItem('fblst_628039024905744');
+                    if (token) {
+                        console.log('token found');
+                        let redirectURL = "https://baszl.herokuapp.com/fbtoken/" + token;
+                        window.location.replace(redirectURL);
+                    }
                 }
             </script>
     </section>
