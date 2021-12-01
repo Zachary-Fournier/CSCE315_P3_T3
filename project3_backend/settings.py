@@ -125,8 +125,6 @@ WSGI_APPLICATION = 'project3_backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-#DATABASES = {}
-#DATABASES['default'] = dj_database_url.config(conn_max_age=600)
 if skipSSL:
     DATABASES = {
         "default": {
@@ -135,16 +133,8 @@ if skipSSL:
         }
     }
 else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2', 
-            'NAME': 'datp7km028qeoo',                     
-            'USER': 'nibyqvqqsevuoh',
-            'PASSWORD': 'd4a33f8e25969db60096a9cced25c1eceace8e906f0492553b79212d54ecd0e8',
-            'HOST': 'ec2-3-215-137-131.compute-1.amazonaws.com', # Or something like this
-            'PORT': '5432',                     
-        }
-    }
+    DATABASES = {}
+    DATABASES['default'] = dj_database_url.config(conn_max_age=600)
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
