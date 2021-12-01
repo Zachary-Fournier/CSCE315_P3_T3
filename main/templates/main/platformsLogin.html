@@ -38,21 +38,29 @@
             -->
             <div class="fb-login-button" data-width="" data-size="large" data-button-type="login_with" data-layout="rounded" data-auto-logout-link="false" data-use-continue-as="false"></div>
             <script>
-                var fbButton = document.querySelector(".fb-login-button");
-                console.log(fbButton);
-                fbButton.addEventListener("click", () => {
-                    token = window.localStorage.getItem('fblst_628039024905744');
-                    if (token) {
-                        console.log('token found');
-                        let redirectURL = "https://baszl.herokuapp.com/fbtoken/" + token;
-                        window.location.replace(redirectURL);
-                    } else {
-                        console.log('No token found');
-                        token = "sometoken";
-                        let redirectURL = "http://127.0.0.1/fbtoken/" + token;
-                        window.location.replace(redirectURL);
+                var fbButton;
+                let temp = setInterval(() => {
+                    fbButton = document.querySelector(".fb-login-button span");
+                    if (fbButton != null) {
+                        console.log(fbButton);
+
+                        fbButton.addEventListener("click", () => {
+                            token = window.localStorage.getItem('fblst_628039024905744');
+                            if (token) {
+                                console.log('token found');
+                                let redirectURL = "https://baszl.herokuapp.com/fbtoken/" + token;
+                                window.location.replace(redirectURL);
+                            } else {
+                                console.log('No token found');
+                                token = "sometoken";
+                                let redirectURL = "http://127.0.0.1/fbtoken/" + token;
+                                window.location.replace(redirectURL);
+                            }
+                        });
+
+                        window.clearInterval(temp);
                     }
-                });
+                }, 250);
             </script>
     </section>
     <section id = "Instagram">
