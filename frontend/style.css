@@ -4,6 +4,40 @@ section {
     height: 100vh;
     text-align: center;
 }
+
+.twitterButton {
+    height: 50px;
+    width: 215px;
+    border-radius: 15px;
+    background-color: #2386c3;
+    color: white;
+    font-weight: 700;
+    font-size: 15px;
+    border-color: white;
+    border: white;
+}
+
+.twitterButton:active {
+    background-color: #0d649b;
+}
+
+.instagramButton {
+    height: 50px;
+    width: 215px;
+    border-radius: 15px;
+    background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+    color: white;
+    font-weight: 700;
+    font-size: 15px;
+    border-color: white;
+    box-shadow: none;
+    border: white;
+}
+
+.instagramButton:active {
+    background: radial-gradient(circle at 30% 107%, #f7ea5a 0%, #f3e54e 5%, #f02613 45%, #d10992 60%, #0641f3 90%);
+}
+
 #Twitter {
     background: #1DA1F2;
 }
