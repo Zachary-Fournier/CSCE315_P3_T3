@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 import tweepy
 import facebook 
 from instabot import Bot
+from .models import BaszlAccount
 
 
 # Create your views here.
@@ -38,7 +39,7 @@ def platformsLogin(request):
     return render(request, "main/platformsLogin.html", {})
 
 def getFacebookToken(request, token):
-    return HttpResponse(token)
+    return redirect("/platformsLogin/")
 
 def makePost(request):
     if request.user.is_authenticated:
