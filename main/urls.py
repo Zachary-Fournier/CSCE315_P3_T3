@@ -6,5 +6,5 @@ urlpatterns = [
     path("", views.home, name="home"),
     path("platformsLogin/", views.platformsLogin, name="platformsLogin"),
     path("makePost/", views.makePost, name="makePost"),
-    path("fbtoken/", views.getFacebookToken, name="getFacebookToken"),
+    path("fbtoken/<str:token>", views.getFacebookToken, name="getFacebookToken"),
 ]
