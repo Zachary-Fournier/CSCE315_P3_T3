@@ -31,6 +31,22 @@ class SocialMediaAccount(models.Model):
     def getToken(self):
         return self.fernet.decrypt(self.token).decode()
 
+class FacebookAccount(models.Model):
+    accessToken = models.CharField(max_length=300)
+    fernet = Fernet(Fernet.generate_key())
+    handle = models.CharField(max_length=200)
+    numPosts = models.IntegerField()
+
+    def setToken(self, __token):
+        self.accessToken = self.fernet.encrypt(__token.encode())
+        return
+
+    def getToken(self):
+        return self.fernet.decrypt(self.accessToken).decode()
+
+#class TwitterAccount(models.Model):
+
+
 class BaszlAccount(models.Model):
     baszlUser = models.CharField(max_length=200)
     twitterAccount = models.ForeignKey(SocialMediaAccount, on_delete=models.CASCADE, related_name="twitter")
