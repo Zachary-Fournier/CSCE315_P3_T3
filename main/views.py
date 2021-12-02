@@ -49,15 +49,15 @@ def getFacebookToken(request, token):
 def getTwitterToken(request):
     return redirect(AUTH.get_authorization_url())
 
-def getTwitterAccess(request, info):
-    #verifier = request.GET.get
-    #token = AUTH.request_token['oauth_token']
-    #AUTH.get_access_token(verifier)
-    return HttpResponse(info)
-    #key = auth.access_token
-    #secret = auth.access_token_secret
+def getTwitterAccess(request):
+    verifier = request.GET.get('oauth_verifier')
+    token = AUTH.request_token['oauth_token']
+    AUTH.get_access_token(verifier)
+    key = AUTH.access_token
+    secret = AUTH.access_token_secret
+    AUTH.set_access_token(key, secret)
 
-    #auth.set_access_token(key, secret)
+    return redirect("/platformsLogin/")
 
 def makePost(request):
     if request.user.is_authenticated:
@@ -79,16 +79,9 @@ def makePost(request):
                 if request.POST.get("twitter"):
                     noPost *= False
 
-                    consumer_key = '1OT7fMp7nItZHuuXNwv0duBs2'
-                    consumer_secret_key = 'zUAsq7LIlNPzxPOuIvWWQ9uqGoG1YUJ12uD7qzK5obWmebViVr' 
-                    access_token = '1455922761499652099-sYxiuHGXfDQrBgRiWalCNbS5FcFpjI'
-                    access_secret_token = '9CjvignMJyKWJUHJvrNyXTzOnUsOgQNhbD9y8G9rQeq6q'
-
-                    auth = tweepy.OAuthHandler(consumer_key,consumer_secret_key)
-                        
-                    auth.set_access_token(access_token,access_secret_token)
-                    api=tweepy.API(auth)
+                    api=tweepy.API(AUTH)
                     api.update_status(status=messagePost)
+                    
                 if request.POST.get("instagram"):
                     noPost *= False
 
