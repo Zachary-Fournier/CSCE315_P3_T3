@@ -56,7 +56,7 @@ def getTwitterAccess(request):
         key = AUTH.access_token #
         secret = AUTH.access_token_secret
         AUTH.set_access_token(key, secret)
-    except tweepy.TweepError:
+    except Exception as e:
         pass
 
     return redirect("/platformsLogin/")
