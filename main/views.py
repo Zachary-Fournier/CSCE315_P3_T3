@@ -39,7 +39,8 @@ def platformsLogin(request):
     return render(request, "main/platformsLogin.html", {})
 
 def getFacebookToken(request, token):
-    return redirect("/platformsLogin/")
+    return HttpResponse(token)
+    #return redirect("/platformsLogin/")
 
 def makePost(request):
     if request.user.is_authenticated:
