@@ -51,7 +51,6 @@ def getTwitterToken(request):
 
 def getTwitterAccess(request):
     verifier = request.GET.get('oauth_verifier')
-    token = AUTH.request_token['oauth_token']
     AUTH.get_access_token(verifier)
     key = AUTH.access_token
     secret = AUTH.access_token_secret
@@ -81,7 +80,7 @@ def makePost(request):
 
                     api=tweepy.API(AUTH)
                     api.update_status(status=messagePost)
-                    
+
                 if request.POST.get("instagram"):
                     noPost *= False
 
