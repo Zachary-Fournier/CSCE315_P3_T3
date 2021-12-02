@@ -52,7 +52,7 @@ def getTwitterToken(request):
 def getTwitterAccess(request):
     verifier = request.GET.get('oauth_verifier')
     AUTH.get_access_token(verifier)
-    key = AUTH.access_token
+    key = AUTH.access_token #
     secret = AUTH.access_token_secret
     AUTH.set_access_token(key, secret)
 
