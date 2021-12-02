@@ -20,7 +20,14 @@
             <input type="password" id="twitterpassword" name="twitterpassword">
         </div>
         -->
-        <button type = "button" id = "twitterlogin"><img src="/static/twitterbird.png" height = "40" width = "40"><span>Log in with Twitter</span></button>
+        <button type="button" id="twitterlogin"><img src="/static/twitterbird.png" height = "40" width = "40"><span>Log in with Twitter</span></button>
+        <script>
+            document.querySelector("#twitterlogin").addEventListener("click", () => {
+                console.log("Here");
+                let redirectURL = window.location.href;
+                window.location.replace(redirectURL.replace("platformsLogin", "getTwitterToken"));
+            });
+        </script>
     </section>
     <section id = "Facebook">
         <img class = "fb" src="/static/facebook_logo.png" alt="Facebook" width="250">
@@ -28,22 +35,6 @@
         </fb:login-button>
             <!--
             <div class="fb-login-button" data-width="" data-size="large" data-button-type="login_with" data-layout="rounded" data-auto-logout-link="false" data-use-continue-as="false"></div>
-            <script>
-                //window.onload = (event) => {window.localStorage.clear();};
-                var startup = true;
-                if (startup) { window.localStorage.clear(); startup = false; }
-                window.addEventListener("click", () => { checkFB(); });
-                const checkFB = function() {
-                    token = window.localStorage.getItem('fblst_628039024905744');
-                    if (token) {
-                        console.log('token found');
-                        let redirectURL = "https://baszl.herokuapp.com/fbtoken/" + token;
-                        window.location.replace(redirectURL);
-                    } else {
-                        console.log('token not found');
-                    }
-                }
-            </script>
             -->
     </section>
     <section id = "Instagram">

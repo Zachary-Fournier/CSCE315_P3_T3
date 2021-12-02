@@ -8,6 +8,10 @@ import facebook
 from instabot import Bot
 from .models import BaszlAccount
 
+consumer_key = '1OT7fMp7nItZHuuXNwv0duBs2'
+consumer_secret = 'zUAsq7LIlNPzxPOuIvWWQ9uqGoG1YUJ12uD7qzK5obWmebViVr'
+
+AUTH = tweepy.OAuthHandler(consumer_key, consumer_secret, 'https://baszl.herokuapp.com/twitteraccess/')
 
 # Create your views here.
 def test(request, nm):
@@ -41,6 +45,19 @@ def platformsLogin(request):
 def getFacebookToken(request, token):
     return HttpResponse(token)
     #return redirect("/platformsLogin/")
+
+def getTwitterToken(request):
+    return redirect(AUTH.get_authorization_url())
+
+def getTwitterAccess(request, info):
+    #verifier = request.GET.get
+    #token = AUTH.request_token['oauth_token']
+    #AUTH.get_access_token(verifier)
+    return HttpResponse(info)
+    #key = auth.access_token
+    #secret = auth.access_token_secret
+
+    #auth.set_access_token(key, secret)
 
 def makePost(request):
     if request.user.is_authenticated:
