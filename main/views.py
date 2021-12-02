@@ -50,11 +50,14 @@ def getTwitterToken(request):
     return redirect(AUTH.get_authorization_url())
 
 def getTwitterAccess(request):
-    verifier = request.GET.get('oauth_verifier')
-    AUTH.get_access_token(verifier)
-    key = AUTH.access_token #
-    secret = AUTH.access_token_secret
-    AUTH.set_access_token(key, secret)
+    try:
+        verifier = request.GET.get('oauth_verifier')
+        AUTH.get_access_token(verifier)
+        key = AUTH.access_token #
+        secret = AUTH.access_token_secret
+        AUTH.set_access_token(key, secret)
+    except tweepy.TweepError:
+        pass
 
     return redirect("/platformsLogin/")
 
