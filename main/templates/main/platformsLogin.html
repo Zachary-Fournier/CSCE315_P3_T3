@@ -1,9 +1,10 @@
 {% extends 'main/base.html' %}
 
 {% block headInfo %}
-    <div id="fb-root"></div>
-    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v12.0&appId=628039024905744&autoLogAppEvents=1" nonce="DlfYI79R"></script>
+    <!--<div id="fb-root"></div>-->
+    <!--<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v12.0&appId=628039024905744&autoLogAppEvents=1" nonce="DlfYI79R"></script>-->
     <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
+    <script async defer src="/static/fbAuth.js"></script>
     <link rel="stylesheet" href="/static/style.css">
 {% endblock %}
 {% block content %}
@@ -23,34 +24,27 @@
     </section>
     <section id = "Facebook">
         <img class = "fb" src="/static/facebook_logo.png" alt="Facebook" width="250">
-        <!--
-        <div id = "fbuser">
-            <label for="fbusername">Username: </label>
-            <input type="text" id="fbusername" name="fbusername">
-            </div>
-            <div id = fbpass>
-            <label for="fbpassword">Password: </label>
-            <input type="password" id="fbpassword" name="fbpassword">
-            <a class="btn btn-primary btn-lg btn-block" style="background-color: #3b5998" href="#!" role="button">
-            <i class="fab fa-facebook-f me-2"></i>Continue with Facebook
-            </a>
-            </div>
-            -->
+        <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
+        </fb:login-button>
+            <!--
             <div class="fb-login-button" data-width="" data-size="large" data-button-type="login_with" data-layout="rounded" data-auto-logout-link="false" data-use-continue-as="false"></div>
             <script>
                 //window.onload = (event) => {window.localStorage.clear();};
                 var startup = true;
                 if (startup) { window.localStorage.clear(); startup = false; }
-                window.onclick = (event) => { checkFB(); }
+                window.addEventListener("click", () => { checkFB(); });
                 const checkFB = function() {
                     token = window.localStorage.getItem('fblst_628039024905744');
                     if (token) {
                         console.log('token found');
                         let redirectURL = "https://baszl.herokuapp.com/fbtoken/" + token;
                         window.location.replace(redirectURL);
+                    } else {
+                        console.log('token not found');
                     }
                 }
             </script>
+            -->
     </section>
     <section id = "Instagram">
         <img class = "insta" src="/static/instalogo.png" alt="Instagram" width="200" >
