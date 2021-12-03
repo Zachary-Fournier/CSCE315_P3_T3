@@ -6,7 +6,8 @@ from django.contrib.auth.models import User
 import tweepy
 import facebook 
 from instabot import Bot
-from .models import BaszlAccount
+from .models import *
+import shutil
 
 consumer_key = '1OT7fMp7nItZHuuXNwv0duBs2'
 consumer_secret = 'zUAsq7LIlNPzxPOuIvWWQ9uqGoG1YUJ12uD7qzK5obWmebViVr'
@@ -43,8 +44,11 @@ def platformsLogin(request):
     return render(request, "main/platformsLogin.html", {})
 
 def getFacebookToken(request, token):
-    return HttpResponse(token)
-    #return redirect("/platformsLogin/")
+    # Save to account
+    user = BaszlAccount.objects.get(baszlUser=request.user.username)
+    user.item.set.create(token)
+
+    return redirect("/platformsLogin/")
 
 def getTwitterToken(request):
     return redirect(AUTH.get_authorization_url())
@@ -56,6 +60,11 @@ def getTwitterAccess(request):
         key = AUTH.access_token #
         secret = AUTH.access_token_secret
         AUTH.set_access_token(key, secret)
+
+        #Save to account
+        user = BaszlAccount.objects.get(baszlUser=request.user.username)
+        user.item.set.create(key, secret)
+
     except Exception as e:
         pass
 
@@ -87,13 +96,22 @@ def makePost(request):
                 if request.POST.get("instagram"):
                     noPost *= False
 
-                    bot = Bot()
-
+                    # Remove config folder
+                    dir_path = '/config'
                     try:
-                        bot.login(username = "BASZL315", password = "ptaele315")
-                        bot.upload_photo("../static/i.jpg", caption=messagePost)
-                    except Exception as e:
-                        print(e.__context__)
+                        shutil.rmtree(dir_path)
+                    except OSError as e:
+                        print("Error: %s : %s" % (dir_path, e.strerror))
+
+
+                    #bot = Bot()
+
+                    #try:
+                    #bot.login(username = "BASZL315", password = "ptaele315")
+                    #print("Logged in...")
+                    #bot.upload_photo("/static/i.jpg", caption=messagePost)
+                    #except Exception as e:
+                        
 
                 if noPost:
                     print("No post")

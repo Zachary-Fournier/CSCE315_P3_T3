@@ -5,16 +5,24 @@ from .forms import RegisterForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.forms import TextInput, PasswordInput
+from main.models import BaszlAccount
 
 # Create your views here.
 def register(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)
         if form.is_valid():
-            form.save()
-            user = authenticate(request, username=request.POST['username'], password=request.POST['password1'])
-            login(request, user)
-            return redirect("/platformsLogin/")
+            try:
+                newUser = BaszlAccount(baszlUser=request.POST['username'])
+                newUser.save()
+                form.save()
+                user = authenticate(request, username=request.POST['username'], password=request.POST['password1'])
+                login(request, user)
+                return redirect("/platformsLogin/")
+                
+            except Exception as e:
+                print("Couldn't register new account")
+                return redirect("/")
         else:
             form = RegisterForm()
     else:
