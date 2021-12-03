@@ -8,6 +8,8 @@ import facebook
 from instabot import Bot
 from .models import *
 import shutil
+from cryptography.fernet import Fernet
+import base64
 
 consumer_key = '1OT7fMp7nItZHuuXNwv0duBs2'
 consumer_secret = 'zUAsq7LIlNPzxPOuIvWWQ9uqGoG1YUJ12uD7qzK5obWmebViVr'
@@ -38,15 +40,15 @@ def platformsLogin(request):
         access_token = SocialToken.objects.get(account__user=request.user, account__provider='facebook') #get instead of filter (you need only one object)
         r = request.get('https://graph.facebook.com/me?access_token='+access_token.token+'&fields=id,name,email') #add access_token.token to your request
     else:
-        #
-        x = 1
+        pass
 
     return render(request, "main/platformsLogin.html", {})
 
 def getFacebookToken(request, token):
     # Save to account
     user = BaszlAccount.objects.get(baszlUser=request.user.username)
-    user.item.set.create(token)
+    fernet = Fernet(base64.urlsafe_b64encode(request.user.username))
+    user.item.set.create(accessToken=fernet.encrypt(token))
 
     return redirect("/platformsLogin/")
 
@@ -62,8 +64,9 @@ def getTwitterAccess(request):
         AUTH.set_access_token(key, secret)
 
         #Save to account
+        fernet = Fernet(base64.urlsafe_b64encode(request.user.username))
         user = BaszlAccount.objects.get(baszlUser=request.user.username)
-        user.item.set.create(key, secret)
+        user.item.set.create(accessToken=fernet.encrypt(key), accessSecret=fernet.encrypt(secret))
 
     except Exception as e:
         pass
@@ -73,10 +76,13 @@ def getTwitterAccess(request):
 def makePost(request):
     if request.user.is_authenticated:
         if request.method == "POST":
-            username = request.user.username
             messagePost = request.POST.get("postText")
             if messagePost:
                 noPost = True
+                # Get Baszl user
+                user = BaszlAccount.objects.get(baszlUser=request.user.username)
+                fernet = Fernet(base64.urlsafe_b64encode(request.user.username))
+
                 # Something actually posted
                 if request.POST.get("facebook"):
                     noPost *= False
@@ -89,9 +95,21 @@ def makePost(request):
 
                 if request.POST.get("twitter"):
                     noPost *= False
+                    twtAcct = list(user.TwitterAccount_set.all())
+                    key = fernet.decrypt(twtAcct[0].accessToken)
+                    #key = AUTH.access_token #
+                    
+                    secret = fernet.decrypt(twtAcct[0].accessSecret)
+                    #secret = AUTH.access_token_secret
+
+                    # test
+                    return HttpResponse(key + " " + secret)
+                    """
+                    AUTH.set_access_token(key, secret)
 
                     api=tweepy.API(AUTH)
                     api.update_status(status=messagePost)
+                    """
 
                 if request.POST.get("instagram"):
                     noPost *= False
