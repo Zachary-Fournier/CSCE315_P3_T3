@@ -10,6 +10,17 @@ from .models import *
 import shutil
 from cryptography.fernet import Fernet
 import base64
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+
+def getKey(string):
+    kdf = PBKDF2HMAC(
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt= b',\x1b%\xb2\xc8\xd1\xedBL\xf1\x1er8\xc1\xf6V',
+        iterations=390000,
+    )
+    return base64.urlsafe_b64encode(kdf.derive(string))
 
 consumer_key = '1OT7fMp7nItZHuuXNwv0duBs2'
 consumer_secret = 'zUAsq7LIlNPzxPOuIvWWQ9uqGoG1YUJ12uD7qzK5obWmebViVr'
@@ -47,7 +58,7 @@ def platformsLogin(request):
 def getFacebookToken(request, token):
     # Save to account
     user = BaszlAccount.objects.get(baszlUser=request.user.username)
-    fernet = Fernet(base64.urlsafe_b64encode(request.user.username.encode()))
+    fernet = Fernet(getKey(request.user.username))
     user.item.set.create(accessToken=fernet.encrypt(token))
 
     return redirect("/platformsLogin/")
@@ -64,7 +75,7 @@ def getTwitterAccess(request):
         AUTH.set_access_token(key, secret)
 
         #Save to account
-        fernet = Fernet(base64.urlsafe_b64encode(request.user.username.encode()))
+        fernet = Fernet(getKey(request.user.username))
         user = BaszlAccount.objects.get(baszlUser=request.user.username)
         user.item.set.create(accessToken=fernet.encrypt(key), accessSecret=fernet.encrypt(secret))
 
@@ -81,7 +92,7 @@ def makePost(request):
                 noPost = True
                 # Get Baszl user
                 user = BaszlAccount.objects.get(baszlUser=request.user.username)
-                fernet = Fernet(base64.urlsafe_b64encode(request.user.username.encode()))
+                fernet = Fernet(getKey(request.user.username))
 
                 # Something actually posted
                 if request.POST.get("facebook"):

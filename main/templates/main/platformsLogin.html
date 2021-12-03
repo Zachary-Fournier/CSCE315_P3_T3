@@ -6,6 +6,11 @@
     <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
     <script async defer src="/static/fbAuth.js"></script>
     <link rel="stylesheet" href="/static/style.css">
+    <style>
+        .loggedIn {
+            opacity: 50%;
+        }
+    </style>
 {% endblock %}
 {% block content %}
     <section id = "Twitter">
@@ -29,7 +34,7 @@
             });
         </script>
     </section>
-    <section id = "Facebook">
+    <section id = "Facebook">py
         <img class = "fb" src="/static/facebook_logo.png" alt="Facebook" width="250">
         <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
         </fb:login-button>
