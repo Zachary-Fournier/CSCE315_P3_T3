@@ -47,7 +47,7 @@ def platformsLogin(request):
 def getFacebookToken(request, token):
     # Save to account
     user = BaszlAccount.objects.get(baszlUser=request.user.username)
-    fernet = Fernet(base64.urlsafe_b64encode(request.user.username))
+    fernet = Fernet(base64.urlsafe_b64encode(request.user.username.encode()))
     user.item.set.create(accessToken=fernet.encrypt(token))
 
     return redirect("/platformsLogin/")
@@ -64,7 +64,7 @@ def getTwitterAccess(request):
         AUTH.set_access_token(key, secret)
 
         #Save to account
-        fernet = Fernet(base64.urlsafe_b64encode(request.user.username))
+        fernet = Fernet(base64.urlsafe_b64encode(request.user.username.encode()))
         user = BaszlAccount.objects.get(baszlUser=request.user.username)
         user.item.set.create(accessToken=fernet.encrypt(key), accessSecret=fernet.encrypt(secret))
 
@@ -81,7 +81,7 @@ def makePost(request):
                 noPost = True
                 # Get Baszl user
                 user = BaszlAccount.objects.get(baszlUser=request.user.username)
-                fernet = Fernet(base64.urlsafe_b64encode(request.user.username))
+                fernet = Fernet(base64.urlsafe_b64encode(request.user.username.encode()))
 
                 # Something actually posted
                 if request.POST.get("facebook"):
