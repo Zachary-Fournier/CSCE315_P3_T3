@@ -20,7 +20,7 @@ def getKey(string):
         salt= b',\x1b%\xb2\xc8\xd1\xedBL\xf1\x1er8\xc1\xf6V',
         iterations=390000,
     )
-    return base64.urlsafe_b64encode(kdf.derive(string))
+    return base64.urlsafe_b64encode(kdf.derive(string.encode()))
 
 consumer_key = '1OT7fMp7nItZHuuXNwv0duBs2'
 consumer_secret = 'zUAsq7LIlNPzxPOuIvWWQ9uqGoG1YUJ12uD7qzK5obWmebViVr'
@@ -106,11 +106,11 @@ def makePost(request):
 
                 if request.POST.get("twitter"):
                     noPost *= False
-                    twtAcct = list(user.TwitterAccount_set.all())
-                    key = fernet.decrypt(twtAcct[0].accessToken)
+                    twtAcct = TwitterAccount.objects.filter(baszlAcct=user).first()
+                    key = fernet.decrypt(twtAcct.accessToken)
                     #key = AUTH.access_token #
                     
-                    secret = fernet.decrypt(twtAcct[0].accessSecret)
+                    secret = fernet.decrypt(twtAcct.accessSecret)
                     #secret = AUTH.access_token_secret
 
                     # test
