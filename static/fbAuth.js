@@ -42,12 +42,12 @@ window.fbAsyncInit = function() {
                 // Get name
                 var fbName = ""
                 FB.api('/me', function(response) {
-                    alert(response);
+                    console.log(response);
                     fbName = response.name;
                 });
                 redirectURL += "&" + fbName;
-                
-                window.location.replace(redirectURL);
+                console.log(redirectURL);
+                //window.location.replace(redirectURL);
             } else {
                 console.log("Not logged in.");
             }
