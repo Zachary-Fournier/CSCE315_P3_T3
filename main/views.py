@@ -58,7 +58,6 @@ def getFacebookToken(request, token):
     # Save to account
     user = BaszlAccount.objects.get(baszlUser=request.user.username)
     fernet = Fernet(getKey(request.user.username))
-    user.facebookaccount_set.update_or_create(accessToken=fernet.encrypt(token))
 
     if (len(user.facebookaccount_set.all()) == 0):
         __token = fernet.encrypt(token.encode())
