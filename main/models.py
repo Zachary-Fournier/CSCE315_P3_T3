@@ -10,14 +10,28 @@ class InstagramAccount(models.Model):
     baszlAcct = models.ForeignKey(BaszlAccount, on_delete=models.CASCADE)
     username = models.CharField(max_length=200)
     password = models.CharField(max_length=200)
+    timeStamp = models.IntegerField(default=0)
     handle = models.CharField(max_length=200, blank=True, null=True)
     numPosts = models.IntegerField(default=0)
+
+    def __str__(self):
+        string = "<p>Password: " + self.password + "</p>"
+        string += "<p>Timestamp: " + str(self.timeStamp) + "</p"
+
+        return string
 
 class FacebookAccount(models.Model):
     baszlAcct = models.ForeignKey(BaszlAccount, on_delete=models.CASCADE)
     accessToken = models.CharField(max_length=300)
+    timeStamp = models.IntegerField(default=0)
     handle = models.CharField(max_length=200,blank=True, null=True)
     numPosts = models.IntegerField(default=0)
+
+    def __str__(self):
+        string = "<p>Access Token: " + self.accessToken + "</p>"
+        string += "<p>Timestamp: " + str(self.timeStamp) + "</p>"
+
+        return string
 
 class TwitterAccount(models.Model):
     baszlAcct = models.ForeignKey(BaszlAccount, on_delete=models.CASCADE)
@@ -28,8 +42,8 @@ class TwitterAccount(models.Model):
     numPosts = models.IntegerField(default=0)
 
     def __str__(self):
-        string = "Access Token: " + self.accessToken + "\n"
-        string += "Access Secret: " + self.accessSecret + "\n"
-        string += "Timestamp: " + str(self.timeStamp)
+        string = "<p>Access Token: " + self.accessToken + "</p>"
+        string += "<p>Access Secret: " + self.accessSecret + "</p>"
+        string += "<p>Timestamp: " + str(self.timeStamp) + "</p>"
 
         return string

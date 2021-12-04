@@ -25,7 +25,6 @@ def getKey(string):
 
 consumer_key = '1OT7fMp7nItZHuuXNwv0duBs2'
 consumer_secret = 'zUAsq7LIlNPzxPOuIvWWQ9uqGoG1YUJ12uD7qzK5obWmebViVr'
-AUTH = tweepy.OAuthHandler(consumer_key, consumer_secret, 'https://baszl.herokuapp.com/twitteraccess/')
 
 # Create your views here.
 def test(request, nm):
@@ -60,6 +59,19 @@ def getFacebookToken(request, token):
     user = BaszlAccount.objects.get(baszlUser=request.user.username)
     fernet = Fernet(getKey(request.user.username))
     user.facebookaccount_set.update_or_create(accessToken=fernet.encrypt(token))
+
+    if (len(user.facebookaccount_set.all()) == 0):
+        __token = fernet.encrypt(token.encode())
+        __timestamp = fernet.extract_timestamp(__token)
+        user.facebookaccount_set.create(accessToken=__token, timeStamp=__timestamp, handle="", numPosts=0)
+    else:
+        fbAcct = FacebookAccount.objects.filter(baszlAcct=user).first()
+        __token = fernet.encrypt(token.encode())
+        __timestamp = fernet.extract_timestamp(__token)
+        fbAcct.accessToken = __token
+        fbAcct.timeStamp = __timestamp
+        fbAcct.handle = ""
+        fbAcct.save()
 
     return redirect("/platformsLogin/")
 
