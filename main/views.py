@@ -104,8 +104,6 @@ def getTwitterAccess(request):
             twtAcct.handle = ""
             twtAcct.save()
 
-            return HttpResponse(str(twtAcct.timeStamp))
-
     except Exception as e:
         pass
 
