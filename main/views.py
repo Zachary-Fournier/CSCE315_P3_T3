@@ -140,13 +140,13 @@ def makePost(request):
                     accessSecret = twtAcct.accessSecret
                     secret = fernet.decrypt_at_time(accessSecret[2:-1].encode(), 604800, int(timestamp))
 
-                    AUTH.set_access_token(key, secret)
+                    AUTH.set_access_token(key.decode(), secret.decode())
 
                     try:
                         api=tweepy.API(AUTH)
                         api.update_status(status=messagePost)
                     except Exception as e:
-                        return HttpResponse("<p>" + key + "</p><p>" + secret + "</p>")
+                        return HttpResponse("<p>" + key.decode() + "</p><p>" + secret.decode() + "</p>")
 
                 if request.POST.get("instagram"):
                     noPost *= False
