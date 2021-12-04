@@ -1,9 +1,6 @@
 from logging import error
-import re
 from django.shortcuts import redirect, render
-from django.http import HttpResponse, HttpResponseRedirect, response
-from allauth.socialaccount.models import SocialToken
-from django.contrib.auth.models import User
+from django.http import HttpResponse, HttpResponseRedirect
 import tweepy
 import facebook 
 from instabot import Bot
@@ -167,13 +164,13 @@ def makePost(request):
                     # With pages_read_engagement and pages_manage_posts
                     token = 'EAAI7Mrr8DhABALiK49eaOjEsSkWbsZAWMrxXTMgxdfoGt4PzQ9oo7sVZBZAIyJs1Ky966MsGu11gZCNvUxMatdLvNsBnF6jqrc7QrCj6sjN8flf5SNU5NvXKLSQfnUZB8DApJY1FXnsMTXAQ9UXSxuYHZAoH41ZBDCPziU4ZCNKTN4FDhyxXzChR96ZBKMrz6yUicU6kVGZAFwW32fgD1TPTye'
 
-                    try:
-                        fb = facebook.GraphAPI(access_token=key)
-                        fb.put_object(parent_object='me', connection_name='feed', message=messagePost)
-                        fbAcct.numPosts = fbAcct.numPosts + 1
-                        fbAcct.save()
-                    except Exception as e:
-                        return HttpResponse("<p>Error posting to Facebook. Click <a href=\"/\">here</a> to return</p>")
+                    #try:
+                    fb = facebook.GraphAPI(access_token=key)
+                    fb.put_object(parent_object='me', connection_name='feed', message=messagePost)
+                    fbAcct.numPosts = fbAcct.numPosts + 1
+                    fbAcct.save()
+                    #except Exception as e:
+                        #return HttpResponse("<p>Error posting to Facebook. Click <a href=\"/\">here</a> to return</p>")
 
                 if request.POST.get("twitter"):
                     noPost *= False
