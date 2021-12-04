@@ -144,8 +144,11 @@ def makePost(request):
 
                     AUTH.set_access_token(key, secret)
 
-                    api=tweepy.API(AUTH)
-                    api.update_status(status=messagePost)
+                    try:
+                        api=tweepy.API(AUTH)
+                        api.update_status(status=messagePost)
+                    except Exception as e:
+                        return HttpResponse(twtAcct.__str__())
 
                 if request.POST.get("instagram"):
                     noPost *= False
