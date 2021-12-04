@@ -29,7 +29,11 @@ window.fbAsyncInit = function() {
       version    : 'v12.0'           // Use this Graph API version for this call.
     });
 
-    document.querySelector(".fb-login-button").addEventListener("click", () => {
+    let fbBtn = document.querySelector(".fb-login-button")
+    
+    fbBtn.onlogin = () => {checkLoginState();}
+
+    fbBtn.addEventListener("click", () => {
         FB.login(function(response) {
             console.log(response);
             if (response.status === 'connected') {   // Logged into your webpage and Facebook.
@@ -41,7 +45,5 @@ window.fbAsyncInit = function() {
                 console.log("Not logged in.");
             }
         }, {scope: 'public_profile,email,pages_manage_posts'});
-
-        checkLoginState();
     });
 }
