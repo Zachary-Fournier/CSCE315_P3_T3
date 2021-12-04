@@ -73,9 +73,8 @@ def getTwitterToken(request):
 def getTwitterAccess(request):
     try:
         verifier = request.GET.get('oauth_verifier')
-        
+        key = request.GET.get('oauth_token')
         AUTH.get_access_token(verifier)
-        key = AUTH.access_token #
         secret = AUTH.access_token_secret
         AUTH.set_access_token(key, secret)
         
