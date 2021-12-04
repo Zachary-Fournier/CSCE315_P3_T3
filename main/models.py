@@ -17,6 +17,7 @@ class InstagramAccount(models.Model):
     def __str__(self):
         string = "<p>Password: " + self.password + "</p>"
         string += "<p>Timestamp: " + str(self.timeStamp) + "</p"
+        string += "<p>Handle: " + self.handle + "</p>"
 
         return string
 
@@ -30,6 +31,7 @@ class FacebookAccount(models.Model):
     def __str__(self):
         string = "<p>Access Token: " + self.accessToken + "</p>"
         string += "<p>Timestamp: " + str(self.timeStamp) + "</p>"
+        string += "<p>Handle: " + self.handle + "</p>"
 
         return string
 
@@ -45,5 +47,6 @@ class TwitterAccount(models.Model):
         string = "<p>Access Token: " + self.accessToken + "</p>"
         string += "<p>Access Secret: " + self.accessSecret + "</p>"
         string += "<p>Timestamp: " + str(self.timeStamp) + "</p>"
+        string += "<p>Handle: " + self.handle + "</p>"
 
         return string
