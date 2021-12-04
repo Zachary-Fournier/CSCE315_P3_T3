@@ -40,8 +40,9 @@ window.fbAsyncInit = function() {
                 redirectURL += "" + response.authResponse.accessToken;
 
                 // Get name
-                fbName = ""
+                var fbName = ""
                 FB.api('/me', function(response) {
+                    console.log(response);
                     fbName = response.name;
                 });
                 redirectURL += "&" + fbName;
