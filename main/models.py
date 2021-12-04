@@ -26,3 +26,10 @@ class TwitterAccount(models.Model):
     timeStamp = models.IntegerField(default=0)
     handle = models.CharField(max_length=200, blank=True, null=True)
     numPosts = models.IntegerField(default=0)
+
+    def __str__(self):
+        string = "Access Token: " + self.accessToken + "\n"
+        string += "Access Secret: " + self.accessSecret + "\n"
+        string += "Timestamp: " + self.timeStamp
+        
+        return string
