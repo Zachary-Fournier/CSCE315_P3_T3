@@ -1,6 +1,7 @@
 from logging import error
+import re
 from django.shortcuts import redirect, render
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, response
 from allauth.socialaccount.models import SocialToken
 from django.contrib.auth.models import User
 import tweepy
@@ -59,7 +60,7 @@ def getFacebookToken(request, token):
     # Save to account
     user = BaszlAccount.objects.get(baszlUser=request.user.username)
     fernet = Fernet(getKey(request.user.username))
-    user.item.set.create(accessToken=fernet.encrypt(token))
+    user.facebookaccount_set.update_or_create(accessToken=fernet.encrypt(token))
 
     return redirect("/platformsLogin/")
 
@@ -69,15 +70,32 @@ def getTwitterToken(request):
 def getTwitterAccess(request):
     try:
         verifier = request.GET.get('oauth_verifier')
+        
         AUTH.get_access_token(verifier)
         key = AUTH.access_token #
         secret = AUTH.access_token_secret
         AUTH.set_access_token(key, secret)
-
+        
         #Save to account
         fernet = Fernet(getKey(request.user.username))
+
         user = BaszlAccount.objects.get(baszlUser=request.user.username)
-        user.item.set.create(accessToken=fernet.encrypt(key), accessSecret=fernet.encrypt(secret))
+
+        if (len(user.twitteraccount_set.all()) == 0):
+            __token = fernet.encrypt(key.encode())
+            __timestamp = fernet.extract_timestamp(__token)
+            __secret = fernet.encrypt_at_time(secret.encode(), __timestamp)
+            user.twitteraccount_set.create(accessToken=__token, accessSecret=__secret, timeStamp=__timestamp, handle="", numPosts=0)
+        else:
+            twtAcct = TwitterAccount.objects.filter(baszlAcct=user).first()
+            __token = fernet.encrypt(key.encode())
+            __timestamp = fernet.extract_timestamp(__token)
+            __secret = fernet.encrypt_at_time(secret.encode(), __timestamp)
+            twtAcct.accessToken = __token
+            twtAcct.accessSecret = __secret
+            twtAcct.timeStamp = __timestamp
+            twtAcct.handle = ""
+            twtAcct.save()
 
     except Exception as e:
         pass
@@ -107,20 +125,18 @@ def makePost(request):
                 if request.POST.get("twitter"):
                     noPost *= False
                     twtAcct = TwitterAccount.objects.filter(baszlAcct=user).first()
-                    key = fernet.decrypt(twtAcct.accessToken)
-                    #key = AUTH.access_token #
+                    timestamp = twtAcct.timeStamp
+                    print(timestamp)
+                    accessToken = twtAcct.accessToken
+                    key = fernet.decrypt_at_time(accessToken[2:-1].encode(), 604800, int(timestamp))
                     
-                    secret = fernet.decrypt(twtAcct.accessSecret)
-                    #secret = AUTH.access_token_secret
+                    accessSecret = twtAcct.accessSecret
+                    secret = fernet.decrypt_at_time(accessSecret[2:-1].encode(), 604800, int(timestamp))
 
-                    # test
-                    return HttpResponse(key + " " + secret)
-                    """
                     AUTH.set_access_token(key, secret)
 
                     api=tweepy.API(AUTH)
                     api.update_status(status=messagePost)
-                    """
 
                 if request.POST.get("instagram"):
                     noPost *= False
