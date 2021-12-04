@@ -40,7 +40,8 @@ window.fbAsyncInit = function() {
                 redirectURL += "token=" + response.authResponse.accessToken;
                 redirectURL += "&userid=" + response.authResponse.userID;
                 
-                let xhr = new XMLHttpRequest("GET", redirectURL);
+                let xhr = new XMLHttpRequest();
+                xhr.open("GET", redirectURL);
                 xhr.send()
             } else {
                 console.log("Not logged in.");
