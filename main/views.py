@@ -68,7 +68,7 @@ def getTwitterToken(request):
     try:
         return redirect(AUTH.get_authorization_url())
     except Exception as e:
-        return redirect("/platformsLogin/")
+        return render(request, "main/accessError.html", {"platform":"Twitter"})
 
 def getTwitterAccess(request):
     try:
