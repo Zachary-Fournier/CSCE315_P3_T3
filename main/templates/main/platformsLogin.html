@@ -21,7 +21,6 @@
         </button>
         <script>
             document.querySelector("#twitterlogin").addEventListener("click", () => {
-                console.log("Here");
                 let redirectURL = window.location.href;
                 window.location.replace(redirectURL.replace("platformsLogin", "getTwitterToken"));
             });

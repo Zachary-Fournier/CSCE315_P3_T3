@@ -43,18 +43,13 @@ def home(request):
 def platformsLogin(request):
     if not request.user.is_authenticated:
         return HttpResponseRedirect("/login/")
-    #print(SocialToken.objects.get(account__user=request.user, account__provider='facebook'))
-
-    if request.method == "POST":
-        # Use information, such as token
-        access_token = SocialToken.objects.get(account__user=request.user, account__provider='facebook') #get instead of filter (you need only one object)
-        r = request.get('https://graph.facebook.com/me?access_token='+access_token.token+'&fields=id,name,email') #add access_token.token to your request
-    else:
-        pass
 
     return render(request, "main/platformsLogin.html", {})
 
-def getFacebookToken(request, token):
+def getFacebookToken(request):
+    token = request.GET.get('token')
+    userID = request.GET.get('userid')
+    
     # Save to account
     try:
         user = BaszlAccount.objects.get(baszlUser=request.user.username)
@@ -63,14 +58,14 @@ def getFacebookToken(request, token):
         if (len(user.facebookaccount_set.all()) == 0):
             __token = fernet.encrypt(token.encode())
             __timestamp = fernet.extract_timestamp(__token)
-            user.facebookaccount_set.create(accessToken=__token, timeStamp=__timestamp, handle="", numPosts=0)
+            user.facebookaccount_set.create(accessToken=__token, timeStamp=__timestamp, handle=userID, numPosts=0)
         else:
             fbAcct = FacebookAccount.objects.filter(baszlAcct=user).first()
             __token = fernet.encrypt(token.encode())
             __timestamp = fernet.extract_timestamp(__token)
             fbAcct.accessToken = __token
             fbAcct.timeStamp = __timestamp
-            fbAcct.handle = ""
+            fbAcct.handle = userID
             fbAcct.save()
 
         return redirect("/platformsLogin/")
