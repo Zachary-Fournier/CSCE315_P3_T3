@@ -14,8 +14,22 @@
             <div class="fb-login-button" data-width="" data-size="large" data-button-type="login_with" data-layout="rounded" data-auto-logout-link="false" data-use-continue-as="false"></div>
         </section>
         <section id = "Instagram">
-            <img class = "insta" src="instalogo.png" alt="Instagram" width="200" >
-            <button class = "instagramButton" type = "button" id = "instalogin"><img src="instalogo.png" height = "20" width = "20"><span>Log in with Instagram</span></button>
+            <img style="padding-bottom: 90px;" class = "insta" src="instalogo.png" alt="Instagram" width="200" >
+            <button onclick="document.getElementById('id01').style.display='block'" class = "instagramButton" style="width: auto;"><img src="instalogo.png" height = "40" width = "40"><span style = "padding-left: 10px; font-size: 24px; ">Log in with Instagram</span></button>
+            <div id="id01" class="modal">
+              <form class="modal-content animate">
+                <div class="imgcontainer">
+                  <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">&times;</span>
+                </div>
+                <div class="container">
+                  <label><b>Username</b></label>
+                  <input id = "username" type="text" placeholder="Enter Username" name="uname" required>
+                  <label><b>Password</b></label>
+                  <input id = "password" type="password" placeholder="Enter Password" name="psw" required>
+                  <button id = "loginButton">Login</button>
+                </div>
+              </form>
+            </div>
         </section>
     </body>
 </html>
