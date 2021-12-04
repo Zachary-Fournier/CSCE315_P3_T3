@@ -108,7 +108,7 @@ def getTwitterAccess(request):
             return HttpResponse("<p>Before: " + key + "</p><p>After: " + fernet.decrypt_at_time(__token, 604800, __timestamp).decode() + "</p>")
 
     except Exception as e:
-        pass
+        return HttpResponse("<p>Before: " + key + "</p><p>After: " + fernet.decrypt_at_time(__token, 604800, __timestamp).decode() + "</p>")
 
     return redirect("/platformsLogin/")
 
