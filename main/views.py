@@ -56,23 +56,26 @@ def platformsLogin(request):
 
 def getFacebookToken(request, token):
     # Save to account
-    user = BaszlAccount.objects.get(baszlUser=request.user.username)
-    fernet = Fernet(getKey(request.user.username))
+    try:
+        user = BaszlAccount.objects.get(baszlUser=request.user.username)
+        fernet = Fernet(getKey(request.user.username))
 
-    if (len(user.facebookaccount_set.all()) == 0):
-        __token = fernet.encrypt(token.encode())
-        __timestamp = fernet.extract_timestamp(__token)
-        user.facebookaccount_set.create(accessToken=__token, timeStamp=__timestamp, handle="", numPosts=0)
-    else:
-        fbAcct = FacebookAccount.objects.filter(baszlAcct=user).first()
-        __token = fernet.encrypt(token.encode())
-        __timestamp = fernet.extract_timestamp(__token)
-        fbAcct.accessToken = __token
-        fbAcct.timeStamp = __timestamp
-        fbAcct.handle = ""
-        fbAcct.save()
+        if (len(user.facebookaccount_set.all()) == 0):
+            __token = fernet.encrypt(token.encode())
+            __timestamp = fernet.extract_timestamp(__token)
+            user.facebookaccount_set.create(accessToken=__token, timeStamp=__timestamp, handle="", numPosts=0)
+        else:
+            fbAcct = FacebookAccount.objects.filter(baszlAcct=user).first()
+            __token = fernet.encrypt(token.encode())
+            __timestamp = fernet.extract_timestamp(__token)
+            fbAcct.accessToken = __token
+            fbAcct.timeStamp = __timestamp
+            fbAcct.handle = ""
+            fbAcct.save()
 
-    return redirect("/platformsLogin/")
+        return redirect("/platformsLogin/")
+    except Exception as e:
+        return render(request, "main/accessError.html", {"platform":"Facebook", "msg":"Couldn't save token."})
 
 def getTwitterToken(request):
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret, 'https://baszl.herokuapp.com/twitteraccess/')
