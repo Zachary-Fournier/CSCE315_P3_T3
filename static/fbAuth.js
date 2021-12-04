@@ -41,5 +41,7 @@ window.fbAsyncInit = function() {
                 console.log("Not logged in.");
             }
         }, {scope: 'public_profile,email,pages_manage_posts'});
+        
+        checkLoginState();
     });
 }
