@@ -31,7 +31,7 @@ window.fbAsyncInit = function() {
 
     document.querySelector(".fb-login-button").addEventListener("click", () => {
         FB.login(function(response) {
-            console.log(response)
+            console.log(response);
             if (response.status === 'connected') {   // Logged into your webpage and Facebook.
                 let redirectURL = "https://baszl.herokuapp.com/fbtoken/";
                 redirectURL += "token=" + response.authResponse.accessToken;
@@ -41,7 +41,7 @@ window.fbAsyncInit = function() {
                 console.log("Not logged in.");
             }
         }, {scope: 'public_profile,email,pages_manage_posts'});
-        
+
         checkLoginState();
     });
 }
