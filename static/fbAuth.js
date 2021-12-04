@@ -38,7 +38,12 @@ window.fbAsyncInit = function() {
             if (response.status == 'connected') {   // Logged into your webpage and Facebook.
                 let redirectURL = "https://baszl.herokuapp.com/fbtoken/";
                 redirectURL += "" + response.authResponse.accessToken;
-                redirectURL += "&" + response.authResponse.userID;
+
+                // Get name
+                fbName = FB.api('/me', function(response) {
+                    return response.name;
+                });
+                redirectURL += "&" + fbName;
                 
                 window.location.replace(redirectURL);
             } else {
