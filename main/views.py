@@ -83,7 +83,7 @@ def getTwitterAccess(request):
         secret = AUTH.access_token_secret
         AUTH.set_access_token(key, secret)
 
-        return HttpResponse("<p>" + key + "</p><p>" + secret + "</p>")
+        #return HttpResponse("<p>" + key + "</p><p>" + secret + "</p>")
         
         #Save to account
         fernet = Fernet(getKey(request.user.username))
@@ -148,7 +148,7 @@ def makePost(request):
                         api=tweepy.API(AUTH)
                         api.update_status(status=messagePost)
                     except Exception as e:
-                        return HttpResponse("<p>" + accessToken[2:-1] + "</p><p>" + accessSecret[2:-1] + "</p>")
+                        return HttpResponse("<p>" + key + "</p><p>" + secret + "</p>")
 
                 if request.POST.get("instagram"):
                     noPost *= False
