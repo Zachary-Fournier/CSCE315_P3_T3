@@ -87,21 +87,26 @@ def getTwitterToken(request):
 
 def getTwitterAccess(request):
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret, 'https://baszl.herokuapp.com/twitteraccess/')
+    verifier = request.GET.get('oauth_verifier')
+    token = request.GET.get('oauth_token')
+    auth.request_token = {
+        'oauth_token':token,
+        'oauth_token_secret':verifier
+    }
+
     try:
-        verifier = request.GET.get('oauth_verifier')
-
-        try:
-            auth.get_access_token(verifier)
-        except Exception as e:
-            pass
+        auth.get_access_token(verifier)
+    except Exception as e:
+        return render(request, "main/accessError.html", {"platform":"Twitter", "msg":"Could not get access token."})
         
-        key = auth.access_token
-        secret = auth.access_token_secret
-        auth.set_access_token(key, secret)
+    key = auth.access_token
+    secret = auth.access_token_secret
+    #auth.set_access_token(key, secret)
 
-        #return HttpResponse("<p>" + key + "</p><p>" + secret + "</p>")
-        
-        #Save to account
+    #return HttpResponse("<p>" + key + "</p><p>" + secret + "</p>")
+    
+    #Save to account
+    try:
         fernet = Fernet(getKey(request.user.username))
         user = BaszlAccount.objects.get(baszlUser=request.user.username)
 
@@ -122,7 +127,7 @@ def getTwitterAccess(request):
             twtAcct.save()
 
     except Exception as e:
-        return render(request, "main/accessError.html", {"platform":"Twitter", "msg":"Got verifier but couldn't save."})
+        return render(request, "main/accessError.html", {"platform":"Twitter", "msg":"Could not save credentials."})
 
     return redirect("/platformsLogin/")
 
