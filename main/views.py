@@ -83,7 +83,7 @@ def getTwitterAccess(request):
         secret = AUTH.access_token_secret
         AUTH.set_access_token(key, secret)
 
-        #return HttpResponse("<p>" + key + "</p><p>" + secret + "</p>")
+        return HttpResponse("<p>" + key + "</p><p>" + secret + "</p>")
         
         #Save to account
         fernet = Fernet(getKey(request.user.username))
