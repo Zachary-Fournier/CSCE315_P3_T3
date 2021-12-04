@@ -25,7 +25,6 @@ def getKey(string):
 
 consumer_key = '1OT7fMp7nItZHuuXNwv0duBs2'
 consumer_secret = 'zUAsq7LIlNPzxPOuIvWWQ9uqGoG1YUJ12uD7qzK5obWmebViVr'
-
 AUTH = tweepy.OAuthHandler(consumer_key, consumer_secret, 'https://baszl.herokuapp.com/twitteraccess/')
 
 # Create your views here.
@@ -65,23 +64,26 @@ def getFacebookToken(request, token):
     return redirect("/platformsLogin/")
 
 def getTwitterToken(request):
+    auth = tweepy.OAuthHandler(consumer_key, consumer_secret, 'https://baszl.herokuapp.com/twitteraccess/')
     try:
-        return redirect(AUTH.get_authorization_url())
+        return redirect(auth.get_authorization_url())
+
     except Exception as e:
         return render(request, "main/accessError.html", {"platform":"Twitter"})
 
 def getTwitterAccess(request):
+    auth = tweepy.OAuthHandler(consumer_key, consumer_secret, 'https://baszl.herokuapp.com/twitteraccess/')
     try:
         verifier = request.GET.get('oauth_verifier')
 
         try:
-            AUTH.get_access_token(verifier)
+            auth.get_access_token(verifier)
         except Exception as e:
             pass
         
-        key = AUTH.access_token
-        secret = AUTH.access_token_secret
-        AUTH.set_access_token(key, secret)
+        key = auth.access_token
+        secret = auth.access_token_secret
+        auth.set_access_token(key, secret)
 
         #return HttpResponse("<p>" + key + "</p><p>" + secret + "</p>")
         
@@ -142,11 +144,11 @@ def makePost(request):
 
                     #key = "1461016776800718857-t2pUgaCncOZn4UG0BsU4kiyYAkOb2O"
                     #secret = "y4EbIWd5sDCKiPvgCz0XT8zaxDaygmPX3WyNWCl9ifwIt"
-
-                    AUTH.set_access_token(key, secret)
+                    auth = tweepy.OAuthHandler(consumer_key, consumer_secret, 'https://baszl.herokuapp.com/twitteraccess/')
+                    auth.set_access_token(key, secret)
 
                     try:
-                        api=tweepy.API(AUTH)
+                        api=tweepy.API(auth)
                         api.update_status(status=messagePost)
                     except Exception as e:
                         return HttpResponse("<p>" + key + "</p><p>" + secret + "</p>")
