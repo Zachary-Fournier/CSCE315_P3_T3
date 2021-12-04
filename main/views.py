@@ -71,7 +71,6 @@ def getTwitterToken(request):
         return redirect("/platformsLogin/")
 
 def getTwitterAccess(request):
-    line = 0
     try:
         verifier = request.GET.get('oauth_verifier')
 
@@ -97,27 +96,17 @@ def getTwitterAccess(request):
             user.twitteraccount_set.create(accessToken=__token, accessSecret=__secret, timeStamp=__timestamp, handle="", numPosts=0)
         else:
             twtAcct = TwitterAccount.objects.filter(baszlAcct=user).first()
-            line += 1
             __token = fernet.encrypt(key.encode())
-            line += 1
             __timestamp = fernet.extract_timestamp(__token)
-            line += 1
             __secret = fernet.encrypt_at_time(secret.encode(), __timestamp)
-            line += 1
             twtAcct.accessToken = __token
-            line += 1
             twtAcct.accessSecret = __secret
-            line += 1
             twtAcct.timeStamp = __timestamp
-            line += 1
             twtAcct.handle = ""
-            line += 1
             twtAcct.save()
-            line += 1
-            return HttpResponse("<p>Before: " + key + "</p><p>After: " + fernet.decrypt_at_time(__token, 604800, __timestamp).decode() + "</p>")
 
     except Exception as e:
-        return HttpResponse("<p>" + str(line) + "</p><p>Before: " + key + "</p><p>After: " + fernet.decrypt_at_time(__token, 604800, __timestamp).decode() + "</p>")
+        return render(request, "main/accessError.html", {"platform":"Twitter"})
 
     return redirect("/platformsLogin/")
 
