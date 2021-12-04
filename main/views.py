@@ -37,6 +37,20 @@ def home(request):
     if not request.user.is_authenticated:
         return HttpResponseRedirect("/login/")
 
+    user = BaszlAccount.objects.get(baszlUser=request.user.username)
+    try:
+        fbAcct = FacebookAccount.objects.filter(baszlAcct=user).first()
+        fbHandle = fbAcct.handle
+        fbPosts = fbAcct.numPosts
+    except Exception as e:
+        pass
+    try:
+        twtAcct = TwitterAccount.objects.filter(baszlAcct=user).first()
+        twtHandle = twtAcct.handle
+        twtPosts = twtAcct.numPosts
+    except Exception as e:
+        pass
+
     return render(request, "main/dashboard.html", {"twtHandle":twtHandle, "igHandle":igHandle, "fbHandle":fbHandle, "numFbPosts":fbPosts, "numIgPosts":igPosts, "numTwtPosts":twtPosts})
         
 
@@ -96,9 +110,13 @@ def getTwitterAccess(request):
         
     key = auth.access_token
     secret = auth.access_token_secret
-    #auth.set_access_token(key, secret)
-
-    #return HttpResponse("<p>" + key + "</p><p>" + secret + "</p>")
+    __handle = ""
+    try:
+        api=tweepy.API(auth)
+        twtUser = api.verify_credentials()
+        __handle = "@" + twtUser.name
+    except Exception as e:
+        return render(request, "main/accessError.html", {"platform":"Twitter", "msg":"Could not get handle."})
     
     #Save to account
     try:
@@ -109,7 +127,7 @@ def getTwitterAccess(request):
             __token = fernet.encrypt(key.encode())
             __timestamp = fernet.extract_timestamp(__token)
             __secret = fernet.encrypt_at_time(secret.encode(), __timestamp)
-            user.twitteraccount_set.create(accessToken=__token, accessSecret=__secret, timeStamp=__timestamp, handle="", numPosts=0)
+            user.twitteraccount_set.create(accessToken=__token, accessSecret=__secret, timeStamp=__timestamp, handle=__handle, numPosts=0)
         else:
             twtAcct = TwitterAccount.objects.filter(baszlAcct=user).first()
             __token = fernet.encrypt(key.encode())
@@ -118,7 +136,7 @@ def getTwitterAccess(request):
             twtAcct.accessToken = __token
             twtAcct.accessSecret = __secret
             twtAcct.timeStamp = __timestamp
-            twtAcct.handle = ""
+            twtAcct.handle = __handle
             twtAcct.save()
 
     except Exception as e:
@@ -151,6 +169,8 @@ def makePost(request):
                     try:
                         fb = facebook.GraphAPI(access_token=key)
                         fb.put_object(parent_object='me', connection_name='feed', message=messagePost)
+                        fbAcct.numPosts = fbAcct.numPosts + 1
+                        fbAcct.save()
                     except Exception as e:
                         return HttpResponse("<p>Error posting to Facebook. Click <a href=\"/\">here</a> to return</p>")
 
@@ -172,6 +192,8 @@ def makePost(request):
                     try:
                         api=tweepy.API(auth)
                         api.update_status(status=messagePost)
+                        twtAcct.numPosts = twtAcct.numPosts + 1
+                        twtAcct.save()
                     except Exception as e:
                         return HttpResponse("<p>" + key + "</p><p>" + secret + "</p>")
 
