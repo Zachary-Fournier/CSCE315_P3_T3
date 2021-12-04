@@ -39,10 +39,12 @@ window.fbAsyncInit = function() {
                 let redirectURL = "https://baszl.herokuapp.com/fbtoken/";
                 redirectURL += "token=" + response.authResponse.accessToken;
                 redirectURL += "&userid=" + response.authResponse.userID;
-                window.location.replace(redirectURL);
+                
+                let xhr = new XMLHttpRequest("GET", redirectURL);
+                xhr.send()
             } else {
                 console.log("Not logged in.");
             }
-        }, {scope: 'public_profile,email,pages_manage_posts'});
+        }, {scope: 'public_profile, pages_manage_posts'});
     });
 }

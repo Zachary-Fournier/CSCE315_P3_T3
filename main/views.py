@@ -61,7 +61,7 @@ def platformsLogin(request):
     return render(request, "main/platformsLogin.html", {})
 
 def getFacebookToken(request):
-    return HttpResponse("Here")
+    return HttpResponse(request.GET.get('token'))
     token = ""
     userID = ""
     if request.GET.get('status') == "connected":
