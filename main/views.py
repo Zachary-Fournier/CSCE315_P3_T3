@@ -61,7 +61,6 @@ def platformsLogin(request):
     return render(request, "main/platformsLogin.html", {})
 
 def getFacebookToken(request, info):
-    info = ""
     response = info.split("&")
     token = response[0]
     userID = response[1]
