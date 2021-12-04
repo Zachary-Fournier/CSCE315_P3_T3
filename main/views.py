@@ -83,7 +83,7 @@ def getTwitterAccess(request):
         secret = AUTH.access_token_secret
         AUTH.set_access_token(key, secret)
 
-        return HttpResponse("<p>" + key + "</p><p>" + secret + "</p>")
+        #return HttpResponse("<p>" + key + "</p><p>" + secret + "</p>")
         
         #Save to account
         fernet = Fernet(getKey(request.user.username))
@@ -105,6 +105,7 @@ def getTwitterAccess(request):
             twtAcct.timeStamp = __timestamp
             twtAcct.handle = ""
             twtAcct.save()
+            return HttpResponse("<p>Before: " + key + "</p><p>After: " + fernet.decrypt_at_time(__token, 604800, __timestamp).decode() + "</p>")
 
     except Exception as e:
         pass
@@ -135,12 +136,14 @@ def makePost(request):
                     noPost *= False
                     twtAcct = TwitterAccount.objects.filter(baszlAcct=user).first()
                     timestamp = twtAcct.timeStamp
-                    print(timestamp)
                     accessToken = twtAcct.accessToken
                     key = fernet.decrypt_at_time(accessToken[2:-1].encode(), 604800, int(timestamp)).decode()
                     
                     accessSecret = twtAcct.accessSecret
                     secret = fernet.decrypt_at_time(accessSecret[2:-1].encode(), 604800, int(timestamp)).decode()
+
+                    #key = "1461016776800718857-t2pUgaCncOZn4UG0BsU4kiyYAkOb2O"
+                    #secret = "y4EbIWd5sDCKiPvgCz0XT8zaxDaygmPX3WyNWCl9ifwIt"
 
                     AUTH.set_access_token(key, secret)
 
