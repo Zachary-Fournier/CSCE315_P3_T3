@@ -138,11 +138,19 @@ def makePost(request):
                 if request.POST.get("facebook"):
                     noPost *= False
 
+                    fbAcct = FacebookAccount.objects.filter(baszlAcct=user).first()
+                    timestamp = fbAcct.timeStamp
+                    accessToken = fbAcct.accessToken
+                    key = fernet.decrypt_at_time(accessToken[2:-1].encode(), 604800, int(timestamp)).decode()
+
                     # With pages_read_engagement and pages_manage_posts
                     token = 'EAAI7Mrr8DhABALiK49eaOjEsSkWbsZAWMrxXTMgxdfoGt4PzQ9oo7sVZBZAIyJs1Ky966MsGu11gZCNvUxMatdLvNsBnF6jqrc7QrCj6sjN8flf5SNU5NvXKLSQfnUZB8DApJY1FXnsMTXAQ9UXSxuYHZAoH41ZBDCPziU4ZCNKTN4FDhyxXzChR96ZBKMrz6yUicU6kVGZAFwW32fgD1TPTye'
 
-                    fb = facebook.GraphAPI(access_token = token)
-                    fb.put_object(parent_object = 'me', connection_name = 'feed', message=messagePost)
+                    try:
+                        fb = facebook.GraphAPI(access_token=key)
+                        fb.put_object(parent_object='me', connection_name='feed', message=messagePost)
+                    except Exception as e:
+                        return HttpResponse("<p>Error posting to Facebook. Click <a href=\"/\">here</a> to return</p>")
 
                 if request.POST.get("twitter"):
                     noPost *= False
