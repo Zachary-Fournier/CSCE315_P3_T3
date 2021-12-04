@@ -30,6 +30,6 @@ class TwitterAccount(models.Model):
     def __str__(self):
         string = "Access Token: " + self.accessToken + "\n"
         string += "Access Secret: " + self.accessSecret + "\n"
-        string += "Timestamp: " + self.timeStamp
-        
+        string += "Timestamp: " + str(self.timeStamp)
+
         return string
