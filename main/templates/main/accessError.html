@@ -1,5 +1,7 @@
 {% extends 'main/base.html' %}
 
 {% block content %}
-<p>Error accessing {{platform}} account. Click <a href="/platformsLogin/">here</a> to go back</p>
+<p>Error accessing {{platform}} account.</p>
+<p>{{msg}}</p>
+<p>Click <a href="/platformsLogin/">here</a> to go back</p>
 {% endblock %}

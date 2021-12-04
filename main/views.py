@@ -80,7 +80,7 @@ def getTwitterToken(request):
         return redirect(auth.get_authorization_url())
 
     except Exception as e:
-        return render(request, "main/accessError.html", {"platform":"Twitter"})
+        return render(request, "main/accessError.html", {"platform":"Twitter", "msg":"Couldn't get request token."})
 
 def getTwitterAccess(request):
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret, 'https://baszl.herokuapp.com/twitteraccess/')
@@ -119,7 +119,7 @@ def getTwitterAccess(request):
             twtAcct.save()
 
     except Exception as e:
-        return render(request, "main/accessError.html", {"platform":"Twitter"})
+        return render(request, "main/accessError.html", {"platform":"Twitter", "msg":"Got verifier but couldn't save."})
 
     return redirect("/platformsLogin/")
 
