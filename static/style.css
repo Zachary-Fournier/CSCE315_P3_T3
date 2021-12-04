@@ -1,25 +1,80 @@
-nav {
-    margin-bottom: 0 !important;
-}
-
 section {
     float:left;
     width: 33.33%;
-    height: 100vh;
-    text-align: center;
+    height: calc(100vh - 35px);
+    position: relative;
+}
+
+.twitterButton {
+    height: 50px;
+    width: 215px;
+    border-radius: 15px;
+    background-color: #2386c3;
+    color: white;
+    font-weight: 700;
+    font-size: 15px;
+    border-color: white;
+    border: white;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    justify-content: space-around;
+    justify-content: space-evenly;
+    position: absolute;
+    bottom: 30%;
+    left: 50%;
+    transform: translate(-50%,50%);
+}
+
+.twitterButton:hover {
+    cursor: pointer;
+    box-shadow: 0 0 10px black;
+}
+
+.twitterButton:active {
+    background-color: #0d649b;
+}
+
+.instagramButton {
+    height: 50px;
+    width: 250px;
+    border-radius: 15px;
+    background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+    color: white;
+    font-weight: bold;
+    font-size: 1rem;
+    border-color: white;
+    box-shadow: none;
+    border: white;
+    position: absolute;
+    bottom: 30%;
+    left: 50%;
+    transform: translate(-50%,50%);
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.instagramButton:hover {
+    cursor: pointer;
+    box-shadow: 0 0 10px black;
+}
+
+.instagramButton:active {
+    background: radial-gradient(circle at 30% 107%, #f7ea5a 0%, #f3e54e 5%, #f02613 45%, #d10992 60%, #0641f3 90%);
 }
 
 #Twitter {
     background: #1DA1F2;
 }
 
+section > img {
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
 #Facebook {
     background: #3b5998;
-
 }
 
 #Instagram {
@@ -32,33 +87,6 @@ section {
 body {
     max-width: 1920px;
     margin: 0;
-    padding: 0;
-}
-
-.bird {
-    max-width: 100%;
-    height: auto;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 75px;
-    display: flex;
-}
-
-.fb {
-    max-width: 80%;
-    height: auto;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 85px;
-    display: flex;
-}
-
-.insta {
-    max-width: 70%;
-    height: auto;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 120px;
 }
 
 #fbuser {
@@ -70,19 +98,128 @@ body {
 }
 
 .fb-login-button {
-    margin-top: 80px;
+    position: absolute;
+    bottom: 30%;
+    left: 50%;
+    transform: translate(-50%,50%);
 }
 
-#twitterlogin img{
-    vertical-align: middle;
+.fb-login-button:hover {
+    box-shadow: 0 0 10px black;
 }
 
 #instalogin {
     margin-top: 80px;
 }
 
-#instalogin img{
-    vertical-align: middle;
-    margin-right: 5px;
-    padding: 2px;
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+nav {
+  margin-bottom: 0 !important;
+}
+
+/* Full-width input fields */
+input[type=text], input[type=password] {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+/* Extra styles for the cancel button */
+.cancelbtn {
+  width: auto;
+  padding: 10px 18px;
+  background-color: #f44336;
+}
+
+/* Center the image and position the close button */
+.imgcontainer {
+  text-align: center;
+  margin: 24px 0 12px 0;
+  position: relative;
+}
+
+img.avatar {
+  width: 40%;
+  border-radius: 50%;
+}
+
+.container {
+  padding: 16px;
+}
+
+span.psw {
+  float: right;
+  padding-top: 16px;
+}
+
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  padding-top: 60px;
+}
+
+/* Modal Content/Box */
+.modal-content {
+  background-color: #fefefe;
+  margin: 5% auto 15% auto; /* 5% from the top, 15% from the bottom and centered */
+  border: 1px solid #888;
+  width: 50%; /* Could be more or less, depending on screen size */
+}
+
+/* The Close Button (x) */
+.close {
+  position: absolute;
+  right: 25px;
+  top: 0;
+  color: #000;
+  font-size: 35px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: red;
+  cursor: pointer;
+}
+
+/* Add Zoom Animation */
+.animate {
+  -webkit-animation: animatezoom 0.6s;
+  animation: animatezoom 0.6s
+}
+
+@-webkit-keyframes animatezoom {
+  from {-webkit-transform: scale(0)} 
+  to {-webkit-transform: scale(1)}
+}
+  
+@keyframes animatezoom {
+  from {transform: scale(0)} 
+  to {transform: scale(1)}
+}
+
+/* Change styles for span and cancel button on extra small screens */
+@media screen and (max-width: 300px) {
+  span.psw {
+     display: block;
+     float: none;
+  }
+  .cancelbtn {
+     width: 100%;
+  }
 }

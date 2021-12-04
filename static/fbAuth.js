@@ -1,19 +1,6 @@
-// Testing Graph API after login.  See statusChangeCallback() for when this call is made.
-function testAPI() {
-    console.log('Welcome!  Fetching your information.... ');
-    FB.api('/me', function(response) {
-      console.log('Successful login for: ' + response.name);
-      document.getElementById('status').innerHTML =
-        'Thanks for logging in, ' + response.name + '!';
-    });
-}
-
 // Called with the results from FB.getLoginStatus().
 function statusChangeCallback(response) {
-    console.log('statusChangeCallback');
-    console.log(response);                   // The current login status of the person.
     if (response.status === 'connected') {   // Logged into your webpage and Facebook.
-      testAPI();
       token = window.localStorage.getItem('fblst_628039024905744');
       if (token) {
           console.log('token found');
@@ -23,7 +10,7 @@ function statusChangeCallback(response) {
           console.log('token not found');
       }  
     } else {                                 // Not logged into your webpage or we are unable to tell.
-      console.log("Login failed");
+      console.log("Not logged in.");
     }
 }
 
@@ -34,12 +21,21 @@ function checkLoginState() {
     });
 }
 
-
 window.fbAsyncInit = function() {
     FB.init({
       appId      : '628039024905744',
       cookie     : true,                     // Enable cookies to allow the server to access the session.
       xfbml      : true,                     // Parse social plugins on this webpage.
       version    : 'v12.0'           // Use this Graph API version for this call.
+    });
+
+    FB.getLoginStatus(function(response) {   // Called after the JS SDK has been initialized.
+      statusChangeCallback(response);        // Returns the login status.
+    });
+
+    document.querySelector(".fb-login-button").addEventListener("click", () => {
+        FB.login(function(response) {
+            statusChangeCallback(response);
+        }, {scope: 'public_profile,email,pages_manage_posts'});
     });
 }
