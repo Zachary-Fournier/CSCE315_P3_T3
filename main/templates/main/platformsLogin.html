@@ -1,10 +1,8 @@
 {% extends 'main/base.html' %}
 
 {% block headInfo %}
-    <div id="fb-root"></div>
-    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v12.0&appId=628039024905744&autoLogAppEvents=1" nonce="Yr9Tg93O"></script>
-    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
     <script async defer src="/static/fbAuth.js"></script>
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
     <link rel="stylesheet" href="/static/style.css">
     <style>
         .loggedIn {
@@ -28,7 +26,9 @@
     </section>
     <section id = "Facebook">
         <img src="/static/facebook_logo.png" alt="Facebook" height="250" width="250">
-        <div class="fb-login-button" data-width="250" data-size="large" data-button-type="continue_with" data-layout="default" data-auto-logout-link="true" data-use-continue-as="true"></div>
+        <button class="fb-login-button">
+            <div>Continue with Facebook</div>
+        </button>
     </section>
     <section id = "Instagram">
         <img src="/static/instalogo.png" alt="Instagram" height="250" width="250">
