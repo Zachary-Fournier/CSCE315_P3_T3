@@ -65,7 +65,10 @@ def getFacebookToken(request, token):
     return redirect("/platformsLogin/")
 
 def getTwitterToken(request):
-    return redirect(AUTH.get_authorization_url())
+    try:
+        return redirect(AUTH.get_authorization_url())
+    except Exception as e:
+        return redirect("/platformsLogin/")
 
 def getTwitterAccess(request):
     try:
@@ -96,6 +99,8 @@ def getTwitterAccess(request):
             twtAcct.timeStamp = __timestamp
             twtAcct.handle = ""
             twtAcct.save()
+
+            return HttpResponse(str(twtAcct.timeStamp))
 
     except Exception as e:
         pass
