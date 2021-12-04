@@ -37,12 +37,10 @@ window.fbAsyncInit = function() {
             console.log(response);
             if (response.status == 'connected') {   // Logged into your webpage and Facebook.
                 let redirectURL = "https://baszl.herokuapp.com/fbtoken/";
-                redirectURL += "token=" + response.authResponse.accessToken;
-                redirectURL += "&userid=" + response.authResponse.userID;
+                redirectURL += "" + response.authResponse.accessToken;
+                redirectURL += "&" + response.authResponse.userID;
                 
-                let xhr = new XMLHttpRequest();
-                xhr.open("GET", redirectURL);
-                xhr.send()
+                window.location.replace(redirectURL);
             } else {
                 console.log("Not logged in.");
             }

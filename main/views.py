@@ -60,16 +60,11 @@ def platformsLogin(request):
 
     return render(request, "main/platformsLogin.html", {})
 
-def getFacebookToken(request):
-    return HttpResponse(request.GET.get('token'))
-    token = ""
-    userID = ""
-    if request.GET.get('status') == "connected":
-        response = request.GET.get('authResponse')
-        token = response.accessToken
-        userID = response.userID
-    else:
-        return render(request, "main/accessError.html", {"platform":"Facebook", "msg":"Login unsuccessful."})
+def getFacebookToken(request, info):
+    info = ""
+    response = info.split("&")
+    token = response[0]
+    userID = response[1]
     
     # Save to account
     try:
