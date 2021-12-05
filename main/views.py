@@ -50,7 +50,6 @@ def home(request):
 
     return render(request, "main/dashboard.html", {"twtHandle":twtHandle, "igHandle":igHandle, "fbHandle":fbHandle, "numFbPosts":fbPosts, "numIgPosts":igPosts, "numTwtPosts":twtPosts})
         
-
 def platformsLogin(request):
     if not request.user.is_authenticated:
         return HttpResponseRedirect("/login/")
@@ -60,7 +59,7 @@ def platformsLogin(request):
 def getFacebookToken(request, info):
     response = info.split("&")
     token = response[0]
-    userID = response[1]
+    name = response[1]
     
     # Save to account
     try:
@@ -70,14 +69,14 @@ def getFacebookToken(request, info):
         if (len(user.facebookaccount_set.all()) == 0):
             __token = fernet.encrypt(token.encode())
             __timestamp = fernet.extract_timestamp(__token)
-            user.facebookaccount_set.create(accessToken=__token, timeStamp=__timestamp, handle=userID, numPosts=0)
+            user.facebookaccount_set.create(accessToken=__token, timeStamp=__timestamp, handle=name, numPosts=0)
         else:
             fbAcct = FacebookAccount.objects.filter(baszlAcct=user).first()
             __token = fernet.encrypt(token.encode())
             __timestamp = fernet.extract_timestamp(__token)
             fbAcct.accessToken = __token
             fbAcct.timeStamp = __timestamp
-            fbAcct.handle = userID
+            fbAcct.handle = name
             fbAcct.save()
 
         return redirect("/platformsLogin/")
@@ -160,9 +159,6 @@ def makePost(request):
                     timestamp = fbAcct.timeStamp
                     accessToken = fbAcct.accessToken
                     key = fernet.decrypt_at_time(accessToken[2:-1].encode(), 604800, int(timestamp)).decode()
-
-                    # With pages_read_engagement and pages_manage_posts
-                    token = 'EAAI7Mrr8DhABALiK49eaOjEsSkWbsZAWMrxXTMgxdfoGt4PzQ9oo7sVZBZAIyJs1Ky966MsGu11gZCNvUxMatdLvNsBnF6jqrc7QrCj6sjN8flf5SNU5NvXKLSQfnUZB8DApJY1FXnsMTXAQ9UXSxuYHZAoH41ZBDCPziU4ZCNKTN4FDhyxXzChR96ZBKMrz6yUicU6kVGZAFwW32fgD1TPTye'
 
                     #try:
                     fb = facebook.GraphAPI(access_token=key)
