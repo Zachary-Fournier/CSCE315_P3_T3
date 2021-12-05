@@ -15,7 +15,7 @@ class InstagramAccount(models.Model):
     numPosts = models.IntegerField(default=0)
 
     def __str__(self):
-        string = "<p>Password: " + self.password + "</p>"
+        string = "<p>Password: " + self.password.decode() + "</p>"
         string += "<p>Timestamp: " + str(self.timeStamp) + "</p"
         string += "<p>Handle: " + self.handle + "</p>"
 
@@ -31,9 +31,9 @@ class FacebookAccount(models.Model):
     numPosts = models.IntegerField(default=0)
 
     def __str__(self):
-        string = "<p>Access Token: " + self.accessToken.encode() + "</p>"
-        string += "<p>Page Token: " + self.pageToken.encode() + "</p>"
-        string += "<p>Page ID: " + self.pageID.encode() + "</p>"
+        string = "<p>Access Token: " + self.accessToken.decode() + "</p>"
+        string += "<p>Page Token: " + self.pageToken.decode() + "</p>"
+        string += "<p>Page ID: " + self.pageID.decode() + "</p>"
         string += "<p>Timestamp: " + str(self.timeStamp) + "</p>"
         string += "<p>Handle: " + self.handle + "</p>"
 
@@ -48,8 +48,8 @@ class TwitterAccount(models.Model):
     numPosts = models.IntegerField(default=0)
 
     def __str__(self):
-        string = "<p>Access Token: " + self.accessToken + "</p>"
-        string += "<p>Access Secret: " + self.accessSecret + "</p>"
+        string = "<p>Access Token: " + self.accessToken.decode() + "</p>"
+        string += "<p>Access Secret: " + self.accessSecret.decode() + "</p>"
         string += "<p>Timestamp: " + str(self.timeStamp) + "</p>"
         string += "<p>Handle: " + self.handle + "</p>"
 
