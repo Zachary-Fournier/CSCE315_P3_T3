@@ -9,15 +9,14 @@ class BaszlAccount(models.Model):
 class InstagramAccount(models.Model):
     baszlAcct = models.ForeignKey(BaszlAccount, on_delete=models.CASCADE)
     username = models.CharField(max_length=200)
-    password = models.CharField(max_length=200)
+    password = models.CharField(max_length=300)
     timeStamp = models.IntegerField(default=0)
-    handle = models.CharField(max_length=200, blank=True, null=True)
     numPosts = models.IntegerField(default=0)
 
     def __str__(self):
-        string = "<p>Password: " + self.password.decode() + "</p>"
+        string = "<p>Username: " + self.username + "</p>"
+        string += "<p>Password: " + self.password + "</p>"
         string += "<p>Timestamp: " + str(self.timeStamp) + "</p"
-        string += "<p>Handle: " + self.handle + "</p>"
 
         return string
 

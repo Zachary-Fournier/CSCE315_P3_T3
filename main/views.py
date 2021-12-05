@@ -24,9 +24,6 @@ consumer_key = '1OT7fMp7nItZHuuXNwv0duBs2'
 consumer_secret = 'zUAsq7LIlNPzxPOuIvWWQ9uqGoG1YUJ12uD7qzK5obWmebViVr'
 
 # Create your views here.
-def test(request, nm):
-    return render(request, "main/testDynamic.html", {"num":nm})
-
 def home(request):
     twtHandle=igHandle=fbHandle = "Not Connected"
     fbPosts=igPosts=twtPosts = 0
@@ -47,16 +44,25 @@ def home(request):
         twtPosts = twtAcct.numPosts
     except Exception as e:
         pass
+    try:
+        igAcct = InstagramAccount.objects.filter(baszlAcct=user).first()
+        igHandle = igAcct.username
+        igPosts = igAcct.numPosts
+    except Exception as e:
+        pass
 
     return render(request, "main/dashboard.html", {"twtHandle":twtHandle, "igHandle":igHandle, "fbHandle":fbHandle, "numFbPosts":fbPosts, "numIgPosts":igPosts, "numTwtPosts":twtPosts})
         
 def platformsLogin(request):
     if not request.user.is_authenticated:
-        return HttpResponseRedirect("/login/")
+        return redirect("/login/")
 
     return render(request, "main/platformsLogin.html", {})
 
 def getFacebookToken(request, info):
+    if not request.user.is_authenticated:
+        return redirect("/login/")
+
     response = info.split("&")
     token = response[0]
     __pageToken = response[1]
@@ -93,6 +99,9 @@ def getFacebookToken(request, info):
         return render(request, "main/accessError.html", {"platform":"Facebook", "msg":"Couldn't save token."})
 
 def getTwitterToken(request):
+    if not request.user.is_authenticated:
+        return redirect("/login/")
+
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret, 'https://baszl.herokuapp.com/twitteraccess/')
     try:
         return redirect(auth.get_authorization_url())
@@ -101,6 +110,9 @@ def getTwitterToken(request):
         return render(request, "main/accessError.html", {"platform":"Twitter", "msg":"Couldn't get request token."})
 
 def getTwitterAccess(request):
+    if not request.user.is_authenticated:
+        return redirect("/login/")
+
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret, 'https://baszl.herokuapp.com/twitteraccess/')
     verifier = request.GET.get('oauth_verifier')
     token = request.GET.get('oauth_token')
@@ -149,6 +161,37 @@ def getTwitterAccess(request):
         return render(request, "main/accessError.html", {"platform":"Twitter", "msg":"Could not save credentials."})
 
     return redirect("/platformsLogin/")
+
+def getInstagramAccess(request):
+    if not request.user.is_authenticated:
+        return redirect("/login/")
+
+    if request.method == "POST":
+        __username = request.POST.get("uname")
+        __password = request.POST.get("psw")
+
+        #Save to account
+        try:
+            fernet = Fernet(getKey(request.user.username))
+            user = BaszlAccount.objects.get(baszlUser=request.user.username)
+
+            if (len(user.instagramaccount_set.all()) == 0):
+                __password = fernet.encrypt(__password.encode())
+                __timestamp = fernet.extract_timestamp(__password)
+                user.instagramaccount_set.create(username=__username, password=__password, timeStamp=__timestamp, numPosts=0)
+            else:
+                igAcct = InstagramAccount.objects.filter(baszlAcct=user).first()
+                __password = fernet.encrypt(__password.encode())
+                __timestamp = fernet.extract_timestamp(__password)
+                igAcct.username = __username
+                igAcct.password = __password
+                igAcct.timeStamp = __timestamp
+                igAcct.save()
+            
+        except Exception as e:
+            return render(request, "main/accessError.html", {"platform":"Instagram", "msg":"Could not save credentials."})
+
+        return redirect("/platformsLogin/")
 
 def makePost(request):
     if request.user.is_authenticated:

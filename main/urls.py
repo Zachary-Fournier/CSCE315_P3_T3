@@ -8,4 +8,5 @@ urlpatterns = [
     path("fbtoken/<str:info>", views.getFacebookToken, name="getFacebookToken"),
     path("getTwitterToken/", views.getTwitterToken, name="getTwitterToken"),
     path("twitteraccess/", views.getTwitterAccess, name="getTwitterAccess"),
+    path("instagramAccess/", views.getInstagramAccess, name="getInstagramAccess"),
 ]
