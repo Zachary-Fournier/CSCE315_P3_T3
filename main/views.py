@@ -207,7 +207,7 @@ def makePost(request):
     if request.method == "POST":
         postImage = False
         postMessage = False
-        messagePost = None
+        messagePost = ""
         iform = None
         if request.FILES:
             postImage = True
@@ -226,6 +226,9 @@ def makePost(request):
             if request.POST.get("facebook"):
                 fbAcct = FacebookAccount.objects.filter(baszlAcct=user).first()
                 timestamp = fbAcct.timeStamp
+                userToken = fbAcct.accessToken
+                userToken = fernet.decrypt_at_time(userToken[2:-1].encode(), 604800, int(timestamp)).decode()
+
                 pageToken = fbAcct.pageToken
                 pageToken = fernet.decrypt_at_time(pageToken[2:-1].encode(), 604800, int(timestamp)).decode()
 
@@ -242,9 +245,25 @@ def makePost(request):
                         return HttpResponse("<p>Error getting image. Click <a href=\"/\">here</a> to return.</p>")
 
                     try:
-                        pass
+                        fb = facebook.GraphAPI(access_token=userToken)
+                        fb.put_photo(image=open(imagePath, 'rb'), message=messagePost)
+                        fbAcct.numPosts = fbAcct.numPosts + 1
+                        fbAcct.save()
                     except Exception as e:
-                        pass
+                        # Clean up
+                        try:
+                            os.remove(imagePath)
+                        except OSError as e:
+                            return HttpResponse("<p>Error deleting uploaded image.</p>")
+
+                        return HttpResponse("<p>Error posting photo to Facebook. Click <a href=\"/\">here</a> to return</p>")
+
+                    # Clean up
+                    try:
+                        os.remove(imagePath)
+                    except OSError as e:
+                        return HttpResponse("<p>Error deleting uploaded image.</p>")
+
                 else:
                     try:
                         fb = facebook.GraphAPI(access_token=pageToken)
@@ -278,27 +297,33 @@ def makePost(request):
                     else:
                         return HttpResponse("<p>Error getting image. Click <a href=\"/\">here</a> to return.</p>")
 
-                    #try:
-                    api=tweepy.API(auth)
+                    try:
+                        api=tweepy.API(auth)
 
-                    # Upload picture and get postId for media
-                    media = api.media_upload(imagePath)
-                    idList = list()
-                    idList.append(media.media_id)
+                        # Upload picture and get postId for media
+                        media = api.media_upload(imagePath)
+                        idList = list()
+                        idList.append(media.media_id)
 
-                    # Update status and associate the previously posted media
-                    api.update_status(status=messagePost, media_ids=idList)
+                        # Update status and associate the previously posted media
+                        api.update_status(status=messagePost, media_ids=idList)
 
-                    twtAcct.numPosts = twtAcct.numPosts + 1
-                    twtAcct.save()
-                    #except Exception as e:
-                        #return HttpResponse("<p>Error posting to Twitter. Click <a href=\"/\">here</a> to return</p>" + str(media.media_id))
+                        twtAcct.numPosts = twtAcct.numPosts + 1
+                        twtAcct.save()
+                    except Exception as e:
+                        # Clean up
+                        try:
+                            os.remove(imagePath)
+                        except OSError as e:
+                            return HttpResponse("<p>Error deleting uploaded image.</p>")
+
+                        return HttpResponse("<p>Error posting to Twitter. Click <a href=\"/\">here</a> to return</p>" + str(media.media_id))
 
                     # Clean up
                     try:
                         os.remove(imagePath)
                     except OSError as e:
-                        return HttpResponse("<p>Error deleting config folder.</p>")
+                        return HttpResponse("<p>Error deleting uploaded image.</p>")
 
                 else:
                     # Standard Tweet
