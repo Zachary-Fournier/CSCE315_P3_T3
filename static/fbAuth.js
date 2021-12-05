@@ -58,7 +58,7 @@ window.fbAsyncInit = function() {
                                 "POST",
                                 {
                                     "message": "What's goin on 'ere?!?!",
-                                    "access_token": "page-access-token"
+                                    "access_token": pgToken
                                 },
                                 function (response) {
                                     console.log(response);
