@@ -31,9 +31,9 @@ class FacebookAccount(models.Model):
     numPosts = models.IntegerField(default=0)
 
     def __str__(self):
-        string = "<p>Access Token: " + self.accessToken + "</p>"
-        string += "<p>Page Token: " + self.pageToken + "</p>"
-        string += "<p>Page ID: " + self.pageID + "</p>"
+        string = "<p>Access Token: " + self.accessToken.encode() + "</p>"
+        string += "<p>Page Token: " + self.pageToken.encode() + "</p>"
+        string += "<p>Page ID: " + self.pageID.encode() + "</p>"
         string += "<p>Timestamp: " + str(self.timeStamp) + "</p>"
         string += "<p>Handle: " + self.handle + "</p>"
 
