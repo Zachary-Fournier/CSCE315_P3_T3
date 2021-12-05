@@ -1,3 +1,5 @@
+window.onload = onloadTheme;
+
 function onloadTheme() {
     if (localStorage.getItem('darkMode') == 'disabled') {
         document.body.classList.toggle("dark-mode");
