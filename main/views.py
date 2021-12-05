@@ -229,13 +229,30 @@ def makePost(request):
                 pageToken = fbAcct.pageToken
                 pageToken = fernet.decrypt_at_time(pageToken[2:-1].encode(), 604800, int(timestamp)).decode()
 
-                try:
-                    fb = facebook.GraphAPI(access_token=pageToken)
-                    fb.put_object(parent_object='me', connection_name='feed', message=messagePost)
-                    fbAcct.numPosts = fbAcct.numPosts + 1
-                    fbAcct.save()
-                except Exception as e:
-                    return HttpResponse("<p>Error posting to Facebook. Click <a href=\"/\">here</a> to return</p>")
+                if postImage:
+                    imagePath = BASE_DIR + "/uploads/"
+                    if iform.is_valid():
+                        image_field = iform.cleaned_data['img']
+                        image = Image.open(image_field)
+                        filename = base64.urlsafe_b64encode(os.urandom(8)).decode() + "." + image.format
+
+                        imagePath += filename
+                        image.save(imagePath, image.format)
+                    else:
+                        return HttpResponse("<p>Error getting image. Click <a href=\"/\">here</a> to return.</p>")
+
+                    try:
+                        pass
+                    except Exception as e:
+                        pass
+                else:
+                    try:
+                        fb = facebook.GraphAPI(access_token=pageToken)
+                        fb.put_object(parent_object='me', connection_name='feed', message=messagePost)
+                        fbAcct.numPosts = fbAcct.numPosts + 1
+                        fbAcct.save()
+                    except Exception as e:
+                        return HttpResponse("<p>Error posting to Facebook. Click <a href=\"/\">here</a> to return</p>")
 
             if request.POST.get("twitter"):
                 twtAcct = TwitterAccount.objects.filter(baszlAcct=user).first()
@@ -266,7 +283,7 @@ def makePost(request):
 
                     # Upload picture and get postId for media
                     media = api.media_upload(imagePath)
-                    idList = ()
+                    idList = list()
                     idList.append(media.media_id)
 
                     # Update status and associate the previously posted media
