@@ -241,20 +241,19 @@ def makePost(request):
                     else:
                         return HttpResponse("<p>Error getting image. Click <a href=\"/\">here</a> to return.</p>")
 
-                    #try:
-                    fb = facebook.GraphAPI(access_token=pageToken)
-                    fb.put_photo(image=open(imagePath, 'rb'), message=messagePost)
-                    fbAcct.numPosts = fbAcct.numPosts + 1
-                    fbAcct.save()
-                    #except Exception as e:
-                    # Clean up
-                    """
                     try:
-                        os.remove(imagePath)
-                    except OSError as e:
-                        return HttpResponse("<p>Error deleting uploaded image.</p>")
+                        fb = facebook.GraphAPI(access_token=pageToken)
+                        fb.put_photo(image=open(imagePath, 'rb'), message=messagePost)
+                        fbAcct.numPosts = fbAcct.numPosts + 1
+                        fbAcct.save()
+                    except Exception as e:
+                        # Clean up
+                        try:
+                            os.remove(imagePath)
+                        except OSError as e:
+                            return HttpResponse("<p>Error deleting uploaded image.</p>")
 
-                    return HttpResponse("<p>Error posting photo to Facebook. Click <a href=\"/\">here</a> to return</p>")"""
+                        return HttpResponse("<p>Error posting photo to Facebook. Click <a href=\"/\">here</a> to return</p>")
 
                     # Clean up
                     try:
