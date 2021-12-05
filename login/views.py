@@ -22,15 +22,14 @@ def register(request):
                 
             except Exception as e:
                 print("Couldn't register new account")
-                return redirect("/")
+                return redirect("/login/1")
         else:
-            form = RegisterForm()
-    else:
-        form = RegisterForm()
+            print("Invalid form")
+            return redirect("/login/2")
   
-    return render(request, "login/login.html", {"rform":form})
+    return redirect("/login/")
 
-def login_view(request):
+def login_view(request, errCode=0):
     errorMsg = ""
     if request.method == "POST":
         user = authenticate(request, username=request.POST['username'], password=request.POST['password'])
@@ -40,6 +39,16 @@ def login_view(request):
         else:
             # Return an 'invalid login' error message.
             errorMsg = "Invalid login. Please enter correct username and password."
+    else:
+        if errCode == 1:
+            # Couldn't register
+            print("Error 1")
+            errorMsg = "Couldn't save new account."
+        elif errCode == 2:
+            # Invalid form
+            print("Error 2")
+            errorMsg = "Invalid registration form."
+
     form = AuthenticationForm()
     rform = RegisterForm()
     

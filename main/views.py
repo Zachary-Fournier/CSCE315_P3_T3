@@ -377,7 +377,7 @@ def makePost(request):
                     try:
                         os.remove(imagePath)
                     except OSError as e:
-                        errorMsg += "<p>Error deleting uploaded image.</p>"
+                        errorMsg += "<p>Error deleting uploaded image - " + imagePath + ".</p>"
                 else:
                     try:
                         os.rename(imagePath + ".REMOVE_ME", imagePath)
