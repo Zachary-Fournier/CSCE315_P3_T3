@@ -266,6 +266,7 @@ def makePost(request):
 
                         # Upload picture and get postId for media
                         media = api.media_upload(imagePath)
+                        return HttpResponse(media.__str__())
                         idList = ()
                         idList.append(media.id_str)
 
