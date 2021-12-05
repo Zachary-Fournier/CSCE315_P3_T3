@@ -101,7 +101,7 @@ def getFacebookToken(request, info):
 
         return redirect("/platformsLogin/")
     except Exception as e:
-        return HttpResponse("<p>Error at line " + line + "</p>" + fbAcct.__str__())
+        return HttpResponse("<p>Error at line " + str(line) + "</p>" + fbAcct.__str__())
         #return render(request, "main/accessError.html", {"platform":"Facebook", "msg":"Couldn't save token."})
 
 def getTwitterToken(request):
