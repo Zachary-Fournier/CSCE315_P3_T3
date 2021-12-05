@@ -283,6 +283,21 @@ font-size: 10px;
 font-family: Verdana, sans-serif;
 }
 
+.story-box {
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #ecf2f5;
+  padding: 25px;
+  border-radius: 15px;
+}
+
+#imagePreview {
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
 .loader {
 border: 0px solid #f3f3f3; /* Light grey */
 border-top: 0px solid #3498db; /* Blue */

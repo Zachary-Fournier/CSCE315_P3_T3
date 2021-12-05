@@ -1,4 +1,5 @@
 from logging import error
+from django.db import reset_queries
 from django.shortcuts import redirect, render
 from django.http import HttpResponse, HttpResponseRedirect
 import tweepy
@@ -11,6 +12,10 @@ import base64
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from project3_backend.settings import BASE_DIR
+from .forms import ImageForm
+from PIL import Image
+import os
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 def getKey(string):
     kdf = PBKDF2HMAC(
@@ -52,7 +57,8 @@ def home(request):
     except Exception as e:
         pass
 
-    return render(request, "main/dashboard.html", {"twtHandle":twtHandle, "igHandle":igHandle, "fbHandle":fbHandle, "numFbPosts":fbPosts, "numIgPosts":igPosts, "numTwtPosts":twtPosts})
+    iform = ImageForm()
+    return render(request, "main/dashboard.html", {"iform":iform, "twtHandle":twtHandle, "igHandle":igHandle, "fbHandle":fbHandle, "numFbPosts":fbPosts, "numIgPosts":igPosts, "numTwtPosts":twtPosts})
         
 def platformsLogin(request):
     if not request.user.is_authenticated:
@@ -195,79 +201,136 @@ def getInstagramAccess(request):
         return redirect("/platformsLogin/")
 
 def makePost(request):
-    if request.user.is_authenticated:
-        if request.method == "POST":
+    if not request.user.is_authenticated:
+        return redirect("/login/")
+    
+    if request.method == "POST":
+        postImage = False
+        postMessage = False
+        messagePost = None
+        iform = None
+        if request.FILES:
+            postImage = True
+            iform = ImageForm(request.POST.get('img'), request.FILES)
+        if request.POST.get("postText"):
+            postMessage = True
             messagePost = request.POST.get("postText")
-            if messagePost:
-                noPost = True
-                # Get Baszl user
-                user = BaszlAccount.objects.get(baszlUser=request.user.username)
-                fernet = Fernet(getKey(request.user.username))
 
-                # Something actually posted
-                if request.POST.get("facebook"):
-                    noPost *= False
+        if postMessage or postImage:
+            noPost = True
+            # Get Baszl user
+            user = BaszlAccount.objects.get(baszlUser=request.user.username)
+            fernet = Fernet(getKey(request.user.username))
 
-                    fbAcct = FacebookAccount.objects.filter(baszlAcct=user).first()
-                    timestamp = fbAcct.timeStamp
-                    pageToken = fbAcct.pageToken
-                    pageToken = fernet.decrypt_at_time(pageToken[2:-1].encode(), 604800, int(timestamp)).decode()
+            # Something actually posted
+            if request.POST.get("facebook"):
+                noPost *= False
 
-                    try:
-                        fb = facebook.GraphAPI(access_token=pageToken)
-                        fb.put_object(parent_object='me', connection_name='feed', message=messagePost)
-                        fbAcct.numPosts = fbAcct.numPosts + 1
-                        fbAcct.save()
-                    except Exception as e:
-                        return HttpResponse("<p>Error posting to Facebook. Click <a href=\"/\">here</a> to return</p>")
+                fbAcct = FacebookAccount.objects.filter(baszlAcct=user).first()
+                timestamp = fbAcct.timeStamp
+                pageToken = fbAcct.pageToken
+                pageToken = fernet.decrypt_at_time(pageToken[2:-1].encode(), 604800, int(timestamp)).decode()
 
-                if request.POST.get("twitter"):
-                    noPost *= False
-                    twtAcct = TwitterAccount.objects.filter(baszlAcct=user).first()
-                    timestamp = twtAcct.timeStamp
-                    accessToken = twtAcct.accessToken
-                    key = fernet.decrypt_at_time(accessToken[2:-1].encode(), 604800, int(timestamp)).decode()
-                    
-                    accessSecret = twtAcct.accessSecret
-                    secret = fernet.decrypt_at_time(accessSecret[2:-1].encode(), 604800, int(timestamp)).decode()
+                try:
+                    fb = facebook.GraphAPI(access_token=pageToken)
+                    fb.put_object(parent_object='me', connection_name='feed', message=messagePost)
+                    fbAcct.numPosts = fbAcct.numPosts + 1
+                    fbAcct.save()
+                except Exception as e:
+                    return HttpResponse("<p>Error posting to Facebook. Click <a href=\"/\">here</a> to return</p>")
 
-                    auth = tweepy.OAuthHandler(consumer_key, consumer_secret, 'https://baszl.herokuapp.com/twitteraccess/')
-                    auth.set_access_token(key, secret)
+            if request.POST.get("twitter"):
+                noPost *= False
+                twtAcct = TwitterAccount.objects.filter(baszlAcct=user).first()
+                timestamp = twtAcct.timeStamp
+                accessToken = twtAcct.accessToken
+                key = fernet.decrypt_at_time(accessToken[2:-1].encode(), 604800, int(timestamp)).decode()
+                
+                accessSecret = twtAcct.accessSecret
+                secret = fernet.decrypt_at_time(accessSecret[2:-1].encode(), 604800, int(timestamp)).decode()
 
-                    try:
-                        api=tweepy.API(auth)
-                        api.update_status(status=messagePost)
-                        twtAcct.numPosts = twtAcct.numPosts + 1
-                        twtAcct.save()
-                    except Exception as e:
-                        return HttpResponse("<p>Error posting to Twitter. Click <a href=\"/\">here</a> to return</p>")
+                auth = tweepy.OAuthHandler(consumer_key, consumer_secret, 'https://baszl.herokuapp.com/twitteraccess/')
+                auth.set_access_token(key, secret)
 
-                if request.POST.get("instagram"):
-                    noPost *= False
+                try:
+                    api=tweepy.API(auth)
+                    api.update_status(status=messagePost)
+                    twtAcct.numPosts = twtAcct.numPosts + 1
+                    twtAcct.save()
+                except Exception as e:
+                    return HttpResponse("<p>Error posting to Twitter. Click <a href=\"/\">here</a> to return</p>")
 
-                    # Remove config folder
-                    dir_path = BASE_DIR + "/config/"
-                    try:
-                        shutil.rmtree(dir_path)
-                    except OSError as e:
-                        print("Error: %s : %s" % (dir_path, e.strerror))
+            if request.POST.get("instagram"):
+                noPost *= False
 
-                    # Can't use try/except
-                    bot = Bot()
-                    igAcct = InstagramAccount.objects.filter(baszlAcct=user).first()
-                    timestamp = igAcct.timeStamp
-                    __password = igAcct.password
-                    __password = fernet.decrypt_at_time(__password[2:-1].encode(), 604800, int(timestamp)).decode()
-                    __username = igAcct.username
+                # Remove config folder
+                dir_path = BASE_DIR + "/config/"
+                try:
+                    shutil.rmtree(dir_path)
+                except OSError as e:
+                    pass
 
-                    bot.login(username=__username, password=__password, is_threaded=True)
-                    bot.upload_photo(BASE_DIR + "/static/i.jpg", caption=messagePost)
+                # Can't use try/except
+                bot = Bot()
+                igAcct = InstagramAccount.objects.filter(baszlAcct=user).first()
+                timestamp = igAcct.timeStamp
+                __password = igAcct.password
+                __password = fernet.decrypt_at_time(__password[2:-1].encode(), 604800, int(timestamp)).decode()
+                __username = igAcct.username
 
-                if noPost:
-                    print("No post")
-                else:
-                    print(messagePost)
-                    # user.account.numPosts += 1
-        return redirect("/")
+                imagePath = BASE_DIR + "/favicon.ico"
+                if postImage:
+                    if iform.is_valid():
+                        image_field = iform.cleaned_data['img']
+                        image = Image.open(image_field)
+                        filename = base64.urlsafe_b64encode(os.urandom(8)).decode() + "." + image.format
+
+                        print("Saving...")
+                        imagePath = BASE_DIR + "/uploads/" + filename
+                        image.save(imagePath, image.format)
+                    else:
+                        return HttpResponse("<p>Error getting image. Click <a href=\"/\">here</a> to return.</p>")
+
+                print(imagePath)
+
+                bot.login(username=__username, password=__password, is_threaded=True)
+                bot.upload_photo(imagePath, caption=messagePost)
+
+                # Clean up
+                errorMsg = ""
+                try:
+                    shutil.rmtree(dir_path)
+                except OSError as e:
+                    errorMsg = "<p>Error deleting config folder.</p>"
+                try:
+                    os.remove(imagePath)
+                except OSError as e:
+                    errorMsg += "<p>Error deleting config folder.</p>"
+                
+                if errorMsg:
+                    errorMsg += "<p>Click <a href=\"/\">here</a> to return.</p>"
+                    return HttpResponse(errorMsg)
+
+    return redirect("/")
+
+def test(request):
+    if request.method == "POST":
+        print(request.POST)
+        chk = request.POST.get('chk')
+        print(chk)
+        if request.FILES:
+            iform = ImageForm(request.POST.get('img'), request.FILES)
+            if iform.is_valid():
+                image_field = iform.cleaned_data['img']
+                image = Image.open(image_field)
+
+                print("Saving...")
+                print(BASE_DIR + "\static\imgToPost." + image.format.lower())
+                image.save(BASE_DIR + "\static\imgToPost." + image.format, image.format)
+
+        return redirect("/test/")
+            
     else:
-        return HttpResponse("You are not authorized for this activity")
+        iform = ImageForm()
+
+        return render(request, "main/test.html", {"iform":iform})

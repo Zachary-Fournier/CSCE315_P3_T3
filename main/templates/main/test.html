@@ -1,0 +1,12 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Test{% endblock %}
+
+{% block content %}
+<form enctype="multipart/form-data" method="POST" action="/test/">
+    <input type="checkbox" name="chk" value="chk">
+    {% csrf_token %}
+    {{iform.img}}
+    <button type="submit" name="image">Load Image</button>
+</form>
+{% endblock %}

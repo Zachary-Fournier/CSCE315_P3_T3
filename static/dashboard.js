@@ -80,6 +80,9 @@ function switchTheme() {
         var style = window.getComputedStyle(el, null).getPropertyValue('color');
         el.style.color = "white";
 
+        console.log("Toggling dark for preview box");
+        document.querySelector(".story-box").style.backgroundColor = "#151618";
+
         return;
     } 
 
@@ -101,6 +104,8 @@ function switchTheme() {
     var el = document.getElementById("fontsettingcolor");
     var style = window.getComputedStyle(el, null).getPropertyValue('color');
     el.style.color = "black";
+
+    document.querySelector(".story-box").style.backgroundColor = "#ecf2f5";
 }
 
 function post() {
@@ -125,15 +130,6 @@ function post() {
     el.style.borderTop = "0px solid #3498db"
 
     alert("Your post(s) have been made!");
-    if (document.getElementById('fbToggle')) {
-
-    }
-    if (document.getElementById('twitterToggle')) {
-
-    }
-    if (document.getElementById('instagramToggle')) {
-
-    }
 }
 
 function changeLoader() {
@@ -188,6 +184,11 @@ function changeFontSize() {
 }
 
 function resetImage() {
-    document.getElementById('uploadButton').value = null;
+    document.getElementById('id_img').value = null;
     document.getElementById('imagePreview').src = "";
 }
+
+var browseBtn = document.querySelector("#id_img")
+browseBtn.addEventListener("change", () => {
+    document.getElementById('imagePreview').src=window.URL.createObjectURL(browseBtn.files[0]);
+});

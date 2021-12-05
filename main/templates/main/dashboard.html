@@ -87,7 +87,7 @@
             <div id="53" class="card">
                 <div class="card-body">
                     <!-- comment box -->
-                    <form method="POST" action="makePost/" class="comment-area-box mb-3">
+                    <form enctype="multipart/form-data" method="POST" action="makePost/" class="comment-area-box mb-3">
                         {% csrf_token %}
                         <span class="input-icon">
                             <textarea name="postText" value="post" id="postText" rows="3" class="form-control" placeholder="Write something..."></textarea>
@@ -109,18 +109,24 @@
                                     <input name="instagram" value="checked" type="checkbox" id="instagramToggle">
                                     <div class="slideri round"></div>
                                 </label>
+                                {{iform.img}}
+                                <!--
                                 <input onchange="document.getElementById('imagePreview').src=window.URL.createObjectURL(this.files[0]); console.log(window.URL.createObjectURL(this.files[0]));" id = "uploadButton" type='file' accept=".jpg, .jpeg, .png"/>
+                                -->
                             </div>
+                            
                             <div id = 'loader' class="loader"></div>
                             <input value="Clear Image" type="button" onClick="resetImage()" />
+                            
                         </div>
                     </form>
                     <!-- end comment box -->
 
                     <!-- Story Box-->
-                    <div >
-                        <img id = "imagePreview" style = "width: 700px;" />
-                    </div> 
+                    <div class="story-box">
+                        <img id="imagePreview" max-width="700px;" />
+                    </div>
+
                     <div >
                         <h2 id = "17" >Have any feedback for us? Let us know <a target = "_blank" href="https://forms.gle/oz76z6jdK3KzybYz7">here!</a></h1>
                     </div> 

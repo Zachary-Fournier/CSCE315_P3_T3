@@ -53,3 +53,6 @@ class TwitterAccount(models.Model):
         string += "<p>Handle: " + self.handle + "</p>"
 
         return string
+
+class ImageFile(models.Model):
+    baszlAcct = models.ForeignKey(BaszlAccount, on_delete=models.CASCADE)
