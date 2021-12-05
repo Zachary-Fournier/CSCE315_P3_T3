@@ -267,7 +267,7 @@ def makePost(request):
                         # Upload picture and get postId for media
                         media = api.media_upload(imagePath)
                         idList = ()
-                        idList.append(media.id)
+                        idList.append(media.media_id)
 
                         # Update status and associate the previously posted media
                         api.update_status(status=messagePost, media_ids=idList)
