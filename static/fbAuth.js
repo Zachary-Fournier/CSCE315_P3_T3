@@ -49,8 +49,8 @@ window.fbAsyncInit = function() {
                         console.log(response);
                         if (response && !response.error) {
                             // Get page id
-                            pgToken = response.data.access_token
-                            pgID = response.data.id;
+                            pgToken = response.data[0].access_token
+                            pgID = response.data[0].id;
                             console.log(pgToken);
                             console.log(pgID);
                             FB.api(
