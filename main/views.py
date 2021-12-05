@@ -226,9 +226,6 @@ def makePost(request):
             if request.POST.get("facebook"):
                 fbAcct = FacebookAccount.objects.filter(baszlAcct=user).first()
                 timestamp = fbAcct.timeStamp
-                userToken = fbAcct.accessToken
-                userToken = fernet.decrypt_at_time(userToken[2:-1].encode(), 604800, int(timestamp)).decode()
-
                 pageToken = fbAcct.pageToken
                 pageToken = fernet.decrypt_at_time(pageToken[2:-1].encode(), 604800, int(timestamp)).decode()
 
@@ -245,7 +242,7 @@ def makePost(request):
                         return HttpResponse("<p>Error getting image. Click <a href=\"/\">here</a> to return.</p>")
 
                     #try:
-                    fb = facebook.GraphAPI(access_token=userToken)
+                    fb = facebook.GraphAPI(access_token=pageToken)
                     fb.put_photo(image=open(imagePath, 'rb'), message=messagePost)
                     fbAcct.numPosts = fbAcct.numPosts + 1
                     fbAcct.save()
