@@ -261,21 +261,21 @@ def makePost(request):
                     else:
                         return HttpResponse("<p>Error getting image. Click <a href=\"/\">here</a> to return.</p>")
 
-                    try:
-                        api=tweepy.API(auth)
+                    #try:
+                    api=tweepy.API(auth)
 
-                        # Upload picture and get postId for media
-                        media = api.media_upload(imagePath)
-                        idList = ()
-                        idList.append(media.media_id)
+                    # Upload picture and get postId for media
+                    media = api.media_upload(imagePath)
+                    idList = ()
+                    idList.append(media.media_id)
 
-                        # Update status and associate the previously posted media
-                        api.update_status(status=messagePost, media_ids=idList)
+                    # Update status and associate the previously posted media
+                    api.update_status(status=messagePost, media_ids=idList)
 
-                        twtAcct.numPosts = twtAcct.numPosts + 1
-                        twtAcct.save()
-                    except Exception as e:
-                        return HttpResponse("<p>Error posting to Twitter. Click <a href=\"/\">here</a> to return</p>" + str(media.media_id))
+                    twtAcct.numPosts = twtAcct.numPosts + 1
+                    twtAcct.save()
+                    #except Exception as e:
+                        #return HttpResponse("<p>Error posting to Twitter. Click <a href=\"/\">here</a> to return</p>" + str(media.media_id))
 
                     # Clean up
                     try:

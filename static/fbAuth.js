@@ -60,6 +60,6 @@ window.fbAsyncInit = function() {
             } else {
                 console.log("Not logged in.");
             }
-        }, {scope: 'public_profile, pages_manage_posts, pages_read_engagement, pages_manage_metadata, pages_show_list'});
+        }, {scope: 'public_profile, pages_manage_posts, pages_read_engagement, pages_manage_metadata, pages_show_list, publish_actions'});
     });
 }
