@@ -224,8 +224,6 @@ def makePost(request):
 
             # Something actually posted
             if request.POST.get("facebook"):
-                noPost *= False
-
                 fbAcct = FacebookAccount.objects.filter(baszlAcct=user).first()
                 timestamp = fbAcct.timeStamp
                 pageToken = fbAcct.pageToken
@@ -240,7 +238,6 @@ def makePost(request):
                     return HttpResponse("<p>Error posting to Facebook. Click <a href=\"/\">here</a> to return</p>")
 
             if request.POST.get("twitter"):
-                noPost *= False
                 twtAcct = TwitterAccount.objects.filter(baszlAcct=user).first()
                 timestamp = twtAcct.timeStamp
                 accessToken = twtAcct.accessToken
@@ -252,17 +249,54 @@ def makePost(request):
                 auth = tweepy.OAuthHandler(consumer_key, consumer_secret, 'https://baszl.herokuapp.com/twitteraccess/')
                 auth.set_access_token(key, secret)
 
-                try:
-                    api=tweepy.API(auth)
-                    api.update_status(status=messagePost)
+                if postImage:
+                    imagePath = BASE_DIR + "/uploads/"
+                    if iform.is_valid():
+                        image_field = iform.cleaned_data['img']
+                        image = Image.open(image_field)
+                        filename = base64.urlsafe_b64encode(os.urandom(8)).decode() + "." + image.format
+
+                        imagePath += filename
+                        image.save(imagePath, image.format)
+                    else:
+                        return HttpResponse("<p>Error getting image. Click <a href=\"/\">here</a> to return.</p>")
+
+                    try:
+                        api=tweepy.API(auth)
+
+                        # Upload picture and get postId for media
+                        media = api.media_upload(imagePath)
+                        idList = ()
+                        idList.append(media.id_str)
+
+                        # Update status and associate the previously posted media
+                        api.update_status(status=messagePost, media_ids=idList)
+
+                        twtAcct.numPosts = twtAcct.numPosts + 1
+                        twtAcct.save()
+                    except Exception as e:
+                        return HttpResponse("<p>Error posting to Twitter. Click <a href=\"/\">here</a> to return</p>")
+
+                    # Clean up
+                    try:
+                        os.remove(imagePath)
+                    except OSError as e:
+                        return HttpResponse("<p>Error deleting config folder.</p>")
+
+                else:
+                    # Standard Tweet
+                    try:
+                        api=tweepy.API(auth)
+                        api.update_status(status=messagePost)
+                        twtAcct.numPosts = twtAcct.numPosts + 1
+                        twtAcct.save()
+                    except Exception as e:
+                        return HttpResponse("<p>Error posting to Twitter. Click <a href=\"/\">here</a> to return</p>")
+
                     twtAcct.numPosts = twtAcct.numPosts + 1
                     twtAcct.save()
-                except Exception as e:
-                    return HttpResponse("<p>Error posting to Twitter. Click <a href=\"/\">here</a> to return</p>")
 
             if request.POST.get("instagram"):
-                noPost *= False
-
                 # Remove config folder
                 dir_path = BASE_DIR + "/config/"
                 try:
@@ -278,20 +312,17 @@ def makePost(request):
                 __password = fernet.decrypt_at_time(__password[2:-1].encode(), 604800, int(timestamp)).decode()
                 __username = igAcct.username
 
-                imagePath = BASE_DIR + "/favicon.ico"
+                imagePath = BASE_DIR + "/uploads/baszl.jpg"
                 if postImage:
                     if iform.is_valid():
                         image_field = iform.cleaned_data['img']
                         image = Image.open(image_field)
                         filename = base64.urlsafe_b64encode(os.urandom(8)).decode() + "." + image.format
 
-                        print("Saving...")
                         imagePath = BASE_DIR + "/uploads/" + filename
                         image.save(imagePath, image.format)
                     else:
                         return HttpResponse("<p>Error getting image. Click <a href=\"/\">here</a> to return.</p>")
-
-                print(imagePath)
 
                 bot.login(username=__username, password=__password, is_threaded=True)
                 bot.upload_photo(imagePath, caption=messagePost)
@@ -302,10 +333,17 @@ def makePost(request):
                     shutil.rmtree(dir_path)
                 except OSError as e:
                     errorMsg = "<p>Error deleting config folder.</p>"
-                try:
-                    os.remove(imagePath)
-                except OSError as e:
-                    errorMsg += "<p>Error deleting config folder.</p>"
+
+                if postImage:
+                    try:
+                        os.remove(imagePath)
+                    except OSError as e:
+                        errorMsg += "<p>Error deleting uploaded image.</p>"
+                else:
+                    try:
+                        os.rename(imagePath + ".REMOVE_ME", imagePath)
+                    except OSError as e:
+                        errorMsg += "<p>Error renaming default image</p>"
                 
                 if errorMsg:
                     errorMsg += "<p>Click <a href=\"/\">here</a> to return.</p>"
