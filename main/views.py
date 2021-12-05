@@ -64,6 +64,7 @@ def getFacebookToken(request, info):
     name = response[3]
     
     # Save to account
+    line = 0
     try:
         user = BaszlAccount.objects.get(baszlUser=request.user.username)
         fernet = Fernet(getKey(request.user.username))
@@ -76,20 +77,32 @@ def getFacebookToken(request, info):
             user.facebookaccount_set.create(accessToken=__token, pageToken=__pageToken, pageID=__pageID, timeStamp=__timestamp, handle=name, numPosts=0)
         else:
             fbAcct = FacebookAccount.objects.filter(baszlAcct=user).first()
+            line += 1
             __token = fernet.encrypt(token.encode())
+            line += 1
             __timestamp = fernet.extract_timestamp(__token)
+            line += 1
             __pageToken = fernet.encrypt_at_time(__pageToken.encode(), __timestamp)
+            line += 1
             __pageID = fernet.encrypt_at_time(__pageID.encode(), __timestamp)
+            line += 1
             fbAcct.accessToken = __token
+            line += 1
             fbAcct.pageToken = __pageToken
+            line += 1
             fbAcct.pageID = __pageID
+            line += 1
             fbAcct.timeStamp = __timestamp
+            line += 1
             fbAcct.handle = name
+            line += 1
             fbAcct.save()
+            line += 1
 
         return redirect("/platformsLogin/")
     except Exception as e:
-        return render(request, "main/accessError.html", {"platform":"Facebook", "msg":"Couldn't save token."})
+        return HttpResponse("<p>Error at line " + line + "</p>" + fbAcct.__str__())
+        #return render(request, "main/accessError.html", {"platform":"Facebook", "msg":"Couldn't save token."})
 
 def getTwitterToken(request):
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret, 'https://baszl.herokuapp.com/twitteraccess/')
