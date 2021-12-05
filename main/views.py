@@ -169,13 +169,13 @@ def makePost(request):
                     pageToken = fbAcct.pageToken
                     pageToken = fernet.decrypt_at_time(pageToken[2:-1].encode(), 604800, int(timestamp)).decode()
 
-                    #try:
-                    fb = facebook.GraphAPI(access_token=pageToken)
-                    fb.put_object(parent_object='me', connection_name='feed', message=messagePost)
-                    fbAcct.numPosts = fbAcct.numPosts + 1
-                    fbAcct.save()
-                    #except Exception as e:
-                        #return HttpResponse("<p>Error posting to Facebook. Click <a href=\"/\">here</a> to return</p>")
+                    try:
+                        fb = facebook.GraphAPI(access_token=pageToken)
+                        fb.put_object(parent_object='me', connection_name='feed', message=messagePost)
+                        fbAcct.numPosts = fbAcct.numPosts + 1
+                        fbAcct.save()
+                    except Exception as e:
+                        return HttpResponse("<p>Error posting to Facebook. Click <a href=\"/\">here</a> to return</p>")
 
                 if request.POST.get("twitter"):
                     noPost *= False
@@ -187,8 +187,6 @@ def makePost(request):
                     accessSecret = twtAcct.accessSecret
                     secret = fernet.decrypt_at_time(accessSecret[2:-1].encode(), 604800, int(timestamp)).decode()
 
-                    #key = "1461016776800718857-t2pUgaCncOZn4UG0BsU4kiyYAkOb2O"
-                    #secret = "y4EbIWd5sDCKiPvgCz0XT8zaxDaygmPX3WyNWCl9ifwIt"
                     auth = tweepy.OAuthHandler(consumer_key, consumer_secret, 'https://baszl.herokuapp.com/twitteraccess/')
                     auth.set_access_token(key, secret)
 

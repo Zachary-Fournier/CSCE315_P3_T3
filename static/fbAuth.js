@@ -54,20 +54,6 @@ window.fbAsyncInit = function() {
                                 redirectURL += "&" + response.name;
                                 window.location.replace(redirectURL);
                             });
-                            /*
-                            FB.api(
-                                "/" + pgID + "/feed",
-                                "POST",
-                                {
-                                    "message": "What's goin on 'ere?!?!",
-                                    "access_token": pgToken
-                                },
-                                function (response) {
-                                    if (response && !response.error) {
-                                        console.log(response.id);
-                                    }
-                                }
-                            );*/
                         }
                     }
                 );
