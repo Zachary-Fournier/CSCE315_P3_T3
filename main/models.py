@@ -25,7 +25,7 @@ class FacebookAccount(models.Model):
     baszlAcct = models.ForeignKey(BaszlAccount, on_delete=models.CASCADE)
     accessToken = models.CharField(max_length=400)
     pageToken = models.CharField(max_length=400)
-    pageID = models.CharField(max_length=32)
+    pageID = models.CharField(max_length=200)
     timeStamp = models.IntegerField(default=0)
     handle = models.CharField(max_length=200,blank=True, null=True)
     numPosts = models.IntegerField(default=0)
