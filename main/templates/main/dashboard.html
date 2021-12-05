@@ -109,7 +109,7 @@
                                     <input name="instagram" value="checked" type="checkbox" id="instagramToggle">
                                     <div class="slideri round"></div>
                                 </label>
-                                <input onchange="document.getElementById('imagePreview').src = window.URL.createObjectURL(this.files[0])" id = "uploadButton" type='file' accept=".jpg, .jpeg, .png"/>
+                                <input onchange="document.getElementById('imagePreview').src=window.URL.createObjectURL(this.files[0]); console.log(window.URL.createObjectURL(this.files[0]));" id = "uploadButton" type='file' accept=".jpg, .jpeg, .png"/>
                             </div>
                             <div id = 'loader' class="loader"></div>
                             <input value="Clear Image" type="button" onClick="resetImage()" />

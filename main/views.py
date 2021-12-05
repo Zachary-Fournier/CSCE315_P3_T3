@@ -10,6 +10,7 @@ from cryptography.fernet import Fernet
 import base64
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+from project3_backend.settings import BASE_DIR
 
 def getKey(string):
     kdf = PBKDF2HMAC(
@@ -132,7 +133,7 @@ def getTwitterAccess(request):
     try:
         api=tweepy.API(auth)
         twtUser = api.verify_credentials()
-        __handle = "@" + twtUser.name
+        __handle = "@" + twtUser.screen_name
     except Exception as e:
         return render(request, "main/accessError.html", {"platform":"Twitter", "msg":"Could not get handle."})
     
@@ -239,27 +240,28 @@ def makePost(request):
                         twtAcct.numPosts = twtAcct.numPosts + 1
                         twtAcct.save()
                     except Exception as e:
-                        return HttpResponse("<p>" + key + "</p><p>" + secret + "</p>")
+                        return HttpResponse("<p>Error posting to Twitter. Click <a href=\"/\">here</a> to return</p>")
 
                 if request.POST.get("instagram"):
                     noPost *= False
 
                     # Remove config folder
-                    dir_path = '/config'
+                    dir_path = BASE_DIR + "/config/"
                     try:
                         shutil.rmtree(dir_path)
                     except OSError as e:
                         print("Error: %s : %s" % (dir_path, e.strerror))
 
+                    # Can't use try/except
+                    bot = Bot()
+                    igAcct = InstagramAccount.objects.filter(baszlAcct=user).first()
+                    timestamp = igAcct.timeStamp
+                    __password = igAcct.password
+                    __password = fernet.decrypt_at_time(__password[2:-1].encode(), 604800, int(timestamp)).decode()
+                    __username = igAcct.username
 
-                    #bot = Bot()
-
-                    #try:
-                    #bot.login(username = "BASZL315", password = "ptaele315")
-                    #print("Logged in...")
-                    #bot.upload_photo("/static/i.jpg", caption=messagePost)
-                    #except Exception as e:
-                        
+                    bot.login(username=__username, password=__password, is_threaded=True)
+                    bot.upload_photo(BASE_DIR + "/static/i.jpg", caption=messagePost)
 
                 if noPost:
                     print("No post")
