@@ -46,26 +46,28 @@ window.fbAsyncInit = function() {
                         "access_token": response.authResponse.accessToken
                     },
                     function (response) {
-                      if (response && !response.error) {
-                        // Get page id
-                        pgToken = response.data.access_token
-                        pgID = response.data.id;
-                        console.log(pgToken);
-                        console.log(pgID);
-                        FB.api(
-                            "/" + pgID + "/feed",
-                            "POST",
-                            {
-                                "message": "What's goin on 'ere?!?!",
-                                "access_token": "page-access-token"
-                            },
-                            function (response) {
-                              if (response && !response.error) {
-                                console.log(response.id);
-                              }
+                        console.log(response);
+                        if (response && !response.error) {
+                            // Get page id
+                            pgToken = response.data.access_token
+                            pgID = response.data.id;
+                            console.log(pgToken);
+                            console.log(pgID);
+                            FB.api(
+                                "/" + pgID + "/feed",
+                                "POST",
+                                {
+                                    "message": "What's goin on 'ere?!?!",
+                                    "access_token": "page-access-token"
+                                },
+                                function (response) {
+                                    if (response && !response.error) {
+                                        console.log(response);
+                                        console.log(response.id);
+                                    }
+                                }
+                            );
                             }
-                        );
-                      }
                     }
                 );
 
