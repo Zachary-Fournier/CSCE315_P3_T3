@@ -61,8 +61,8 @@ window.fbAsyncInit = function() {
                                     "access_token": "page-access-token"
                                 },
                                 function (response) {
+                                    console.log(response);
                                     if (response && !response.error) {
-                                        console.log(response);
                                         console.log(response.id);
                                     }
                                 }
