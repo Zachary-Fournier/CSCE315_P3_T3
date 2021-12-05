@@ -59,7 +59,9 @@ def platformsLogin(request):
 def getFacebookToken(request, info):
     response = info.split("&")
     token = response[0]
-    name = response[1]
+    __pageToken = response[1]
+    __pageID = response[2]
+    name = response[3]
     
     # Save to account
     try:
@@ -69,12 +71,18 @@ def getFacebookToken(request, info):
         if (len(user.facebookaccount_set.all()) == 0):
             __token = fernet.encrypt(token.encode())
             __timestamp = fernet.extract_timestamp(__token)
-            user.facebookaccount_set.create(accessToken=__token, timeStamp=__timestamp, handle=name, numPosts=0)
+            __pageToken = fernet.encrypt_at_time(__pageToken.encode(), __timestamp)
+            __pageID = fernet.encrypt_at_time(__pageID.encode(), __timestamp)
+            user.facebookaccount_set.create(accessToken=__token, pageToken=__pageToken, pageID=__pageID, timeStamp=__timestamp, handle=name, numPosts=0)
         else:
             fbAcct = FacebookAccount.objects.filter(baszlAcct=user).first()
             __token = fernet.encrypt(token.encode())
             __timestamp = fernet.extract_timestamp(__token)
+            __pageToken = fernet.encrypt_at_time(__pageToken.encode(), __timestamp)
+            __pageID = fernet.encrypt_at_time(__pageID.encode(), __timestamp)
             fbAcct.accessToken = __token
+            fbAcct.pageToken = __pageToken
+            fbAcct.pageID = __pageID
             fbAcct.timeStamp = __timestamp
             fbAcct.handle = name
             fbAcct.save()
@@ -157,11 +165,11 @@ def makePost(request):
 
                     fbAcct = FacebookAccount.objects.filter(baszlAcct=user).first()
                     timestamp = fbAcct.timeStamp
-                    accessToken = fbAcct.accessToken
-                    key = fernet.decrypt_at_time(accessToken[2:-1].encode(), 604800, int(timestamp)).decode()
+                    pageToken = fbAcct.pageToken
+                    pageToken = fernet.decrypt_at_time(pageToken[2:-1].encode(), 604800, int(timestamp)).decode()
 
                     #try:
-                    fb = facebook.GraphAPI(access_token=key)
+                    fb = facebook.GraphAPI(access_token=pageToken)
                     fb.put_object(parent_object='me', connection_name='feed', message=messagePost)
                     fbAcct.numPosts = fbAcct.numPosts + 1
                     fbAcct.save()

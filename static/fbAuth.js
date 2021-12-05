@@ -34,7 +34,6 @@ window.fbAsyncInit = function() {
     
     fbBtn.addEventListener("click", () => {
         FB.login(function(response) {
-            console.log(response);
             if (response.status == 'connected') {   // Logged into your webpage and Facebook.
                 var redirectURL = "https://baszl.herokuapp.com/fbtoken/";
                 redirectURL += response.authResponse.accessToken;
@@ -46,13 +45,16 @@ window.fbAsyncInit = function() {
                         "access_token": response.authResponse.accessToken
                     },
                     function (response) {
-                        console.log(response);
                         if (response && !response.error) {
                             // Get page id
-                            pgToken = response.data[0].access_token
-                            pgID = response.data[0].id;
-                            console.log(pgToken);
-                            console.log(pgID);
+                            redirectURL += "&" + response.data[0].access_token;
+                            redirectURL += "&" + response.data[0].id;
+                            // Get name and send
+                            FB.api('/me', function(response) {
+                                redirectURL += "&" + response.name;
+                                window.location.replace(redirectURL);
+                            });
+                            /*
                             FB.api(
                                 "/" + pgID + "/feed",
                                 "POST",
@@ -61,21 +63,14 @@ window.fbAsyncInit = function() {
                                     "access_token": pgToken
                                 },
                                 function (response) {
-                                    console.log(response);
                                     if (response && !response.error) {
                                         console.log(response.id);
                                     }
                                 }
-                            );
-                            }
+                            );*/
+                        }
                     }
                 );
-
-                // Get name and send
-                /*FB.api('/me', function(response) {
-                    redirectURL += "&" + response.name;
-                    window.location.replace(redirectURL);
-                });*/
             } else {
                 console.log("Not logged in.");
             }
