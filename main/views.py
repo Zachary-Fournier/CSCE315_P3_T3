@@ -236,7 +236,8 @@ def getFacebookToken(request, info):
     token = response[0]
     __pageToken = response[1]
     __pageID = response[2]
-    name = response[3]
+    igID = response[3]
+    name = response[4]
     
     # Save to account
     try:

@@ -58,15 +58,13 @@ window.fbAsyncInit = function() {
                                 "access_token": userAccessToken
                             }
                             , function(response) {
-                                console.log(response);
-                                //console.log(response.instagram_business_account.id);
-                            });
+                                redirectURL += "&" + response.instagram_business_account.id
 
-                            // Get name and send
-                            FB.api('/me', function(response) {
-                                redirectURL += "&" + response.name;
-                                console.log("Hehe");
-                                //window.location.replace(redirectURL);
+                                // Get name and send
+                                FB.api('/me', function(response) {
+                                    redirectURL += "&" + response.name;
+                                    window.location.replace(redirectURL);
+                                });
                             });
                         }
                     }
