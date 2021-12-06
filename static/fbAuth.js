@@ -52,8 +52,11 @@ window.fbAsyncInit = function() {
                             redirectURL += "&" + response.data[0].id;
 
                             // Get ig
-                            FB.api('/' + response.data[0].id + "/instagram_business_account",
-                            { "access_token": userAccessToken }
+                            FB.api('/' + response.data[0].id,
+                            { 
+                                "fields": "instagram_business_account",
+                                "access_token": userAccessToken
+                            }
                             , function(response) {
                                 console.log(response);
                                 //console.log(response.instagram_business_account.id);
