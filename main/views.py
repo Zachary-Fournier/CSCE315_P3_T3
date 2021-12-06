@@ -54,18 +54,6 @@ def makePostThread(request, sessionKey):
                     fbAcct.numPosts = fbAcct.numPosts + 1
                     fbAcct.save()
                 except Exception as e:
-                    # Clean up
-                    try:
-                        os.remove(sessionInfo['imagePath'])
-                    except OSError as e:
-                        pass
-
-                    errorCodes[0] = "420"
-
-                # Clean up
-                try:
-                    os.remove(sessionInfo['imagePath'])
-                except OSError as e:
                     errorCodes[0] = "420"
 
             else:
@@ -104,18 +92,6 @@ def makePostThread(request, sessionKey):
                     twtAcct.numPosts = twtAcct.numPosts + 1
                     twtAcct.save()
                 except Exception as e:
-                    # Clean up
-                    try:
-                        os.remove(sessionInfo['imagePath'])
-                    except OSError as e:
-                        pass
-
-                    errorCodes[1] = "421"
-
-                # Clean up
-                try:
-                    os.remove(sessionInfo['imagePath'])
-                except OSError as e:
                     errorCodes[1] = "421"
 
             else:
@@ -163,16 +139,19 @@ def makePostThread(request, sessionKey):
             except OSError as e:
                 errorCodes[2] = "422"
 
-            if sessionInfo['imagePath']:
-                try:
-                    os.remove(imagePath)
-                except OSError as e:
-                    errorCodes[2] = "422"
-            else:
+            if not sessionInfo['imagePath']:
                 try:
                     os.rename(imagePath + ".REMOVE_ME", imagePath)
                 except OSError as e:
                     errorCodes[2] = "422"
+        
+        # Remove image if it exists
+        if sessionInfo['imagePath']:
+            try:
+                os.remove(sessionInfo['imagePath'])
+            except OSError as e:
+                errorCodes[2] = "418"
+        
         # Update any errors
         errorString = user.statusCodes.split(",")
         for code in errorCodes:
