@@ -22,15 +22,34 @@ const loginCallback = function() {
                         { 
                             "fields": "instagram_business_account",
                             "access_token": userAccessToken
-                        }
-                        , function(response) {
+                        }, 
+                        function(response) {
                             redirectURL += "&instagram_id=" + response.instagram_business_account.id
 
+                            FB.api(
+                                "/" + response.instagram_business_account.id,
+                                function (response) {
+                                  if (response && !response.error) {
+                                    console.log(response);
+                                  }
+                                }
+                            );
+                            /*
+                            FB.api('/' + response.instagram_business_account.id,
+                            {
+                                "fields": "username",
+                                "access_token": userAccessToken
+                            }, 
+                            function(response) {console.log(response);});
+                            */
+
                             // Get name and send
+                            /*
                             FB.api('/me', function(response) {
                                 redirectURL += "&name=" + response.name;
                                 window.location.replace(redirectURL);
                             });
+                            */
                         });
                     }
                 }
