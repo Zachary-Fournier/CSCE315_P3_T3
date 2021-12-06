@@ -184,6 +184,8 @@ def makePostThread(request, sessionKey):
         user.statuCodes = errorString
         user.save()
 
+    del sessionDict[sessionKey]
+
 async def postAwaitable(request, sessionKey):
     print("Starting makePost Thread")
     postThread = threading.Thread(target=makePostThread, args=(request, sessionKey,))
