@@ -55,7 +55,8 @@ window.fbAsyncInit = function() {
                             FB.api('/' + response.data[0].id + "/instagram_business_account",
                             { "access_token": userAccessToken }
                             , function(response) {
-                                console.log(response.instagram_business_account.id);
+                                console.log(response);
+                                //console.log(response.instagram_business_account.id);
                             });
 
                             // Get name and send
