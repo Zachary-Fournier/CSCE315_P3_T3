@@ -2,6 +2,7 @@
 webapp address: https://baszl.herokuapp.com/
 
 this is the project for TAMU CSCE_315 Team #30
+Heroku would not connect to our tamu github, so we are using our personal github.
 
 SCRUM meeting timestamps were updated on the tamu github: https://github.tamu.edu/zfournier/CSCE315_Project3_Team30
 
