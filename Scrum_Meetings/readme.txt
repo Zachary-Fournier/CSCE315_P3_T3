@@ -1,4 +1,6 @@
 Storing the scrum meetings throughout project 3
+Accurate timestamps for when our SCRUM meeting are held are on our tamu github: https://github.tamu.edu/zfournier/CSCE315_Project3_Team30
+
 
 Token Knowledge:
 https://stackoverflow.com/questions/8685790/adding-headers-to-requests-module
