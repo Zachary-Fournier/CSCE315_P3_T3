@@ -372,9 +372,9 @@ def makePost(request):
 
     if request.POST.get("facebook"):
         sessionDict[sessionKey]['fb'] = True
-    elif request.POST.get("twitter"):
+    if request.POST.get("twitter"):
         sessionDict[sessionKey]['twt'] = True
-    elif request.POST.get("instagram"):
+    if request.POST.get("instagram"):
         sessionDict[sessionKey]['ig'] = True
 
     if request.FILES:
