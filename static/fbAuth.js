@@ -36,13 +36,14 @@ window.fbAsyncInit = function() {
         FB.login(function(response) {
             if (response.status == 'connected') {   // Logged into your webpage and Facebook.
                 var redirectURL = "https://baszl.herokuapp.com/fbtoken/";
-                redirectURL += response.authResponse.accessToken;
+                var userAccessToken = response.authResponse.accessToken;
+                redirectURL += userAccessToken;
 
                 // Get the page access token
                 FB.api(
                     "/" + response.authResponse.userID + "/accounts",
                     {
-                        "access_token": response.authResponse.accessToken
+                        "access_token": userAccessToken
                     },
                     function (response) {
                         if (response && !response.error) {
@@ -51,7 +52,9 @@ window.fbAsyncInit = function() {
                             redirectURL += "&" + response.data[0].id;
 
                             // Get ig
-                            FB.api('/' + response.data[0].id, function(response) {
+                            FB.api('/' + response.data[0].id + "/instagram_business_account",
+                            { "access_token": userAccessToken }
+                            , function(response) {
                                 console.log(response.instagram_business_account.id);
                             });
 
