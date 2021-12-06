@@ -152,12 +152,8 @@ def makePostThread(request, sessionKey):
             if sessionInfo['imagePath']:
                 imagePath = sessionInfo['imagePath']
 
-            bot.login(username=__username, password=__password, is_threaded=True)
-            status = None
-            while not(status):
-                status = bot.upload_photo(imagePath, caption=sessionInfo['postText'])
-
-            print(status)
+            bot.login(username=__username, password=__password, force=True, is_threaded=True)
+            bot.upload_photo(imagePath, caption=sessionInfo['postText'])
             
             # Clean up
             try:
@@ -184,13 +180,12 @@ def makePostThread(request, sessionKey):
         user.statuCodes = errorString
         user.save()
 
-    del sessionDict[sessionKey]
+    del sessionDict[keyCopy]
 
 async def postAwaitable(request, sessionKey):
     print("Starting makePost Thread")
     postThread = threading.Thread(target=makePostThread, args=(request, sessionKey,))
     postThread.start()
-
 
 async def postTimeoutWrapper(request, sessionKey):
     # Timeout after a minute
