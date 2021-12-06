@@ -30,18 +30,18 @@ def getKey(string):
     return base64.urlsafe_b64encode(kdf.derive(string.encode()))
 
 def makePostThread(request, sessionKey):
+    # Get Baszl user and session info
+    user = BaszlAccount.objects.get(baszlUser=request.user.username)
+    fernet = Fernet(getKey(request.user.username))
     keyCopy = copy.deepcopy(sessionKey)
     sessionInfo = sessionDict[sessionKey]
-    sessionDict[sessionKey]['fetched'] = 1
+    sessionDict[sessionKey]['fetched'] = 1  # free to go back
 
     if sessionInfo['imagePath'] or sessionInfo['postText']:
         errorCodes = ["", "", ""]
-        # Get Baszl user
-        user = BaszlAccount.objects.get(baszlUser=request.user.username)
-        fernet = Fernet(getKey(request.user.username))
 
         # Something actually posted
-        if request.POST.get("facebook"):
+        if sessionInfo['fb']:
             fbAcct = FacebookAccount.objects.filter(baszlAcct=user).first()
             timestamp = fbAcct.timeStamp
             pageToken = fbAcct.pageToken
@@ -77,7 +77,7 @@ def makePostThread(request, sessionKey):
                 except Exception as e:
                     errorCodes[0] = "420"
 
-        if request.POST.get("twitter"):
+        if sessionInfo['twt']:
             twtAcct = TwitterAccount.objects.filter(baszlAcct=user).first()
             timestamp = twtAcct.timeStamp
             accessToken = twtAcct.accessToken
@@ -131,7 +131,7 @@ def makePostThread(request, sessionKey):
                 twtAcct.numPosts = twtAcct.numPosts + 1
                 twtAcct.save()
 
-        if request.POST.get("instagram"):
+        if sessionInfo['ig']:
             # Remove config folder if left behind
             dir_path = BASE_DIR + "/config/"
             try:
@@ -389,7 +389,14 @@ def makePost(request):
 
     user = BaszlAccount.objects.get(baszlUser=request.user.username)
     sessionKey = base64.urlsafe_b64encode(os.urandom(16)).decode()
-    sessionDict[sessionKey] = {"fetched": 0,"imagePath":"", "postText":""}
+    sessionDict[sessionKey] = {"fetched": 0,"imagePath":"", "postText":"", "fb":False, "twt":False, "ig":False}
+
+    if request.POST.get("facebook"):
+        sessionDict[sessionKey]['fb'] = True
+    elif request.POST.get("twitter"):
+        sessionDict[sessionKey]['twt'] = True
+    elif request.POST.get("instagram"):
+        sessionDict[sessionKey]['ig'] = True
 
     if request.FILES:
         iform = ImageForm(request.POST.get('img'), request.FILES)
