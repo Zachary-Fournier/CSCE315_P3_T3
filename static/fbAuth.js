@@ -28,6 +28,7 @@ const loginCallback = function() {
 
                             FB.api(
                                 "/" + response.instagram_business_account.id,
+                                { "fields": "username"},
                                 function (response) {
                                   if (response && !response.error) {
                                     console.log(response);
