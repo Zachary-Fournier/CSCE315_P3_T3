@@ -1,5 +1,4 @@
 from django.db import models
-import tweepy
 
 # Create your models here.
 
@@ -9,14 +8,12 @@ class BaszlAccount(models.Model):
 
 class InstagramAccount(models.Model):
     baszlAcct = models.ForeignKey(BaszlAccount, on_delete=models.CASCADE)
-    username = models.CharField(max_length=200)
-    password = models.CharField(max_length=300)
+    accountID = models.CharField(max_length=300)
     timeStamp = models.IntegerField(default=0)
     numPosts = models.IntegerField(default=0)
 
     def __str__(self):
-        string = "<p>Username: " + self.username + "</p>"
-        string += "<p>Password: " + self.password + "</p>"
+        string = "<p>ID: " + self.accountID + "</p>"
         string += "<p>Timestamp: " + str(self.timeStamp) + "</p"
 
         return string

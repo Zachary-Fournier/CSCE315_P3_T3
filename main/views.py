@@ -1,8 +1,7 @@
 from django.shortcuts import redirect, render
 from django.http import HttpResponse, HttpResponseRedirect
 import tweepy
-import facebook 
-from instabot import Bot
+import facebook
 from .models import *
 import shutil
 from cryptography.fernet import Fernet
@@ -17,6 +16,8 @@ import threading
 import asyncio
 from async_timeout import timeout
 import copy
+import requests
+import json
 
 sessionDict = {}
 
@@ -28,6 +29,24 @@ def getKey(string):
         iterations=390000,
     )
     return base64.urlsafe_b64encode(kdf.derive(string.encode()))
+
+def getPhoto(request):
+    response = None
+    if request.method == "GET":
+        filename = request.GET.get('filename')
+        imagePath = BASE_DIR + "/uploads/" + filename
+        response = HttpResponse(open(imagePath, "rb"), headers={
+            'Content-Type': 'image/jpeg',
+            'Content-Length': os.path.getsize(imagePath),
+            'Content-Disposition': 'attachment; filename=' + filename,
+        })
+
+    try:
+        os.remove(imagePath)
+    except OSError as e:
+        pass
+
+    return response
 
 def makePostThread(request, sessionKey):
     # Get Baszl user and session info
@@ -115,8 +134,7 @@ def makePostThread(request, sessionKey):
             except OSError as e:
                 pass
 
-            # Can't use try/except
-            bot = Bot()
+            # Get ig ID
             igAcct = InstagramAccount.objects.filter(baszlAcct=user).first()
             timestamp = igAcct.timeStamp
             __password = igAcct.password
@@ -228,22 +246,28 @@ def platformsLogin(request):
 
     return render(request, "main/platformsLogin.html", {})
 
-def getFacebookToken(request, info):
+def getFbandIGAccess(request):
     if not request.user.is_authenticated:
         return redirect("/login/")
 
+    token = request.GET.get('user_access_token')
+    __pageToken = request.GET.get('page_access_token')
+    __pageID = request.GET.get('page_id')
+    __igID = request.GET.get('instagram_id')
+    name = request.GET.get('name')
+    """
     response = info.split("&")
     token = response[0]
     __pageToken = response[1]
     __pageID = response[2]
     igID = response[3]
     name = response[4]
+    """
     
-    # Save to account
+    # Save to Facebook account
+    user = BaszlAccount.objects.get(baszlUser=request.user.username)
+    fernet = Fernet(getKey(request.user.username))
     try:
-        user = BaszlAccount.objects.get(baszlUser=request.user.username)
-        fernet = Fernet(getKey(request.user.username))
-
         if (len(user.facebookaccount_set.all()) == 0):
             __token = fernet.encrypt(token.encode())
             __timestamp = fernet.extract_timestamp(__token)
@@ -263,10 +287,28 @@ def getFacebookToken(request, info):
             fbAcct.handle = name
             fbAcct.save()
 
-        return redirect("/platformsLogin/")
     except Exception as e:
         #return HttpResponse(fbAcct.__str__())
         return render(request, "main/accessError.html", {"platform":"Facebook", "msg":"Couldn't save token."})
+
+    #Save to Instagram account
+    try:
+        if (len(user.instagramaccount_set.all()) == 0):
+            __igID = fernet.encrypt(__igID.encode())
+            __timestamp = fernet.extract_timestamp(__igID)
+            user.instagramaccount_set.create(accountID=__igID, timeStamp=__timestamp, numPosts=0)
+        else:
+            igAcct = InstagramAccount.objects.filter(baszlAcct=user).first()
+            __igID = fernet.encrypt(__igID.encode())
+            __timestamp = fernet.extract_timestamp(__igID)
+            igAcct.accountID = __igID
+            igAcct.timeStamp = __timestamp
+            igAcct.save()
+        
+    except Exception as e:
+        return render(request, "main/accessError.html", {"platform":"Instagram", "msg":"Could not save credentials."})
+
+    return redirect("/platformsLogin/")
 
 def getTwitterToken(request):
     if not request.user.is_authenticated:
@@ -332,37 +374,6 @@ def getTwitterAccess(request):
 
     return redirect("/platformsLogin/")
 
-def getInstagramAccess(request):
-    if not request.user.is_authenticated:
-        return redirect("/login/")
-
-    if request.method == "POST":
-        __username = request.POST.get("uname")
-        __password = request.POST.get("psw")
-
-        #Save to account
-        try:
-            fernet = Fernet(getKey(request.user.username))
-            user = BaszlAccount.objects.get(baszlUser=request.user.username)
-
-            if (len(user.instagramaccount_set.all()) == 0):
-                __password = fernet.encrypt(__password.encode())
-                __timestamp = fernet.extract_timestamp(__password)
-                user.instagramaccount_set.create(username=__username, password=__password, timeStamp=__timestamp, numPosts=0)
-            else:
-                igAcct = InstagramAccount.objects.filter(baszlAcct=user).first()
-                __password = fernet.encrypt(__password.encode())
-                __timestamp = fernet.extract_timestamp(__password)
-                igAcct.username = __username
-                igAcct.password = __password
-                igAcct.timeStamp = __timestamp
-                igAcct.save()
-            
-        except Exception as e:
-            return render(request, "main/accessError.html", {"platform":"Instagram", "msg":"Could not save credentials."})
-
-        return redirect("/platformsLogin/")
-
 def makePost(request):
     if not request.user.is_authenticated:
         return redirect("/login/")
@@ -383,7 +394,8 @@ def makePost(request):
         if iform.is_valid():
             image_field = iform.cleaned_data['img']
             image = Image.open(image_field)
-            filename = base64.urlsafe_b64encode(os.urandom(8)).decode() + "." + image.format
+            image = image.convert('RGB')
+            filename = base64.urlsafe_b64encode(os.urandom(8)).decode() + ".JPEG"
 
             imagePath = BASE_DIR + "/uploads/" + filename
             image.save(imagePath, image.format)

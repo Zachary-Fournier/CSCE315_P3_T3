@@ -6,8 +6,8 @@ urlpatterns = [
     path("<int:form>", views.home, name="home"),
     path("platformsLogin/", views.platformsLogin, name="platformsLogin"),
     path("makePost/", views.makePost, name="makePost"),
-    path("fbtoken/<str:info>", views.getFacebookToken, name="getFacebookToken"),
+    path("fbandigaccess/", views.getFbandIGAccess, name="getFbandIGAccess"),
     path("getTwitterToken/", views.getTwitterToken, name="getTwitterToken"),
     path("twitteraccess/", views.getTwitterAccess, name="getTwitterAccess"),
-    path("instagramAccess/", views.getInstagramAccess, name="getInstagramAccess"),
+    path("getPhoto/", views.getPhoto, name="getPhoto"),
 ]
