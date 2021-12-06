@@ -127,7 +127,12 @@ def makePostThread(request, sessionKey):
                 twtAcct.save()
 
         if sessionInfo['ig']:
-            # Get ig ID
+            # Get user access token and ig ID
+            fbAcct = FacebookAccount.objects.filter(baszlAcct=user).first()
+            timestamp = fbAcct.timeStamp
+            accessToken = fbAcct.accessToken
+            accessToken = fernet.decrypt_at_time(accessToken[2:-1].encode(), 604800, int(timestamp)).decode()
+
             igAcct = InstagramAccount.objects.filter(baszlAcct=user).first()
             timestamp = igAcct.timeStamp
             __igID = igAcct.accountID
@@ -147,7 +152,8 @@ def makePostThread(request, sessionKey):
                 imageUrl = 'http://baszl.herokuapp.com/getPhoto?filename=' + filename
                 payload = {
                     'image_url': imageUrl,
-                    'caption': sessionInfo['postText']
+                    'caption': sessionInfo['postText'],
+                    'access_token': accessToken
                 }
                 r = requests.post(apiUrl + '/media', data=payload)
 
@@ -156,6 +162,7 @@ def makePostThread(request, sessionKey):
                     containerID = result['id']
                     second_payload = {
                         'creation_id': containerID,
+                        'access_token': accessToken
                     }
                     r = requests.post(apiUrl + '/media_publish', data=second_payload)
 
