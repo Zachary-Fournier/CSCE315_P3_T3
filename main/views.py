@@ -40,9 +40,9 @@ def getPhoto(request):
             'Content-Length': os.path.getsize(imagePath),
             'Content-Disposition': 'attachment; filename=' + filename,
         })
-
     try:
-        os.remove(imagePath)
+        if filename != "baszl.jpg":
+            os.remove(imagePath)
     except OSError as e:
         pass
 
@@ -56,7 +56,7 @@ def makePostThread(request, sessionKey):
     sessionInfo = sessionDict[sessionKey]
     sessionDict[sessionKey]['fetched'] = 1  # free to go back
 
-    if sessionInfo['imagePath'] or sessionInfo['postText']:
+    if sessionInfo['filename'] or sessionInfo['postText']:
         errorCodes = ["", "", ""]
 
         # Something actually posted
@@ -66,10 +66,10 @@ def makePostThread(request, sessionKey):
             pageToken = fbAcct.pageToken
             pageToken = fernet.decrypt_at_time(pageToken[2:-1].encode(), 604800, int(timestamp)).decode()
 
-            if sessionInfo['imagePath']:
+            if sessionInfo['filename']:
                 try:
                     fb = facebook.GraphAPI(access_token=pageToken)
-                    fb.put_photo(image=open(sessionInfo['imagePath'], 'rb'), message=sessionInfo['postText'])
+                    fb.put_photo(image=open(BASE_DIR + "/uploads/" + sessionInfo['filename'], 'rb'), message=sessionInfo['postText'])
                     fbAcct.numPosts = fbAcct.numPosts + 1
                     fbAcct.save()
                 except Exception as e:
@@ -96,12 +96,12 @@ def makePostThread(request, sessionKey):
             auth = tweepy.OAuthHandler(consumer_key, consumer_secret, 'https://baszl.herokuapp.com/twitteraccess/')
             auth.set_access_token(key, secret)
 
-            if sessionInfo['imagePath']:
+            if sessionInfo['filename']:
                 try:
                     api=tweepy.API(auth)
 
                     # Upload picture and get postId for media
-                    media = api.media_upload(sessionInfo['imagePath'])
+                    media = api.media_upload(BASE_DIR + "/uploads/" + sessionInfo['filename'])
                     idList = list()
                     idList.append(media.media_id)
 
@@ -127,46 +127,45 @@ def makePostThread(request, sessionKey):
                 twtAcct.save()
 
         if sessionInfo['ig']:
-            # Remove config folder if left behind
-            dir_path = BASE_DIR + "/config/"
-            try:
-                shutil.rmtree(dir_path)
-            except OSError as e:
-                pass
-
             # Get ig ID
             igAcct = InstagramAccount.objects.filter(baszlAcct=user).first()
             timestamp = igAcct.timeStamp
-            __password = igAcct.password
-            __password = fernet.decrypt_at_time(__password[2:-1].encode(), 604800, int(timestamp)).decode()
-            __username = igAcct.username
+            __igID = igAcct.accountID
+            __igID = fernet.decrypt_at_time(__igID[2:-1].encode(), 604800, int(timestamp)).decode()
+            
+            #__igID = 17841450558552750
 
-            imagePath = BASE_DIR + "/uploads/baszl.jpg"
-            if sessionInfo['imagePath']:
-                imagePath = sessionInfo['imagePath']
+            imagePath = BASE_DIR + "/uploads/"
+            filename = "baszl.jpg"
+            if sessionInfo['filename']:
+                filename = sessionInfo['filename']
+            imagePath += filename
 
-            bot.login(username=__username, password=__password, force=True, is_threaded=True)
             try:
-                bot.upload_photo(imagePath, caption=sessionInfo['postText'])
+                #Post the Image
+                apiUrl = 'https://graph.facebook.com/v12.0/' + __igID
+                imageUrl = 'http://baszl.herokuapp.com/getPhoto?filename=' + filename
+                payload = {
+                    'image_url': imageUrl,
+                    'caption': sessionInfo['postText']
+                }
+                r = requests.post(apiUrl + '/media', data=payload)
+
+                result = json.loads(r.text)
+                if 'id' in result:
+                    containerID = result['id']
+                    second_payload = {
+                        'creation_id': containerID,
+                    }
+                    r = requests.post(apiUrl + '/media_publish', data=second_payload)
+
             except Exception as e:
                 pass
-            
-            # Clean up
-            try:
-                shutil.rmtree(dir_path)
-            except OSError as e:
-                errorCodes[2] = "422"
-
-            if not sessionInfo['imagePath']:
-                try:
-                    os.rename(imagePath + ".REMOVE_ME", imagePath)
-                except OSError as e:
-                    errorCodes[2] = "422"
         
-        # Remove image if it exists
-        if sessionInfo['imagePath']:
+        # Remove image if it exists for Facebook and Twitter
+        if sessionInfo['filename'] and not sessionInfo['ig']:
             try:
-                os.remove(sessionInfo['imagePath'])
+                os.remove(sessionInfo['filename'])
             except OSError as e:
                 errorCodes[2] = "418"
         
@@ -255,14 +254,6 @@ def getFbandIGAccess(request):
     __pageID = request.GET.get('page_id')
     __igID = request.GET.get('instagram_id')
     name = request.GET.get('name')
-    """
-    response = info.split("&")
-    token = response[0]
-    __pageToken = response[1]
-    __pageID = response[2]
-    igID = response[3]
-    name = response[4]
-    """
     
     # Save to Facebook account
     user = BaszlAccount.objects.get(baszlUser=request.user.username)
@@ -400,7 +391,7 @@ def makePost(request):
             imagePath = BASE_DIR + "/uploads/" + filename
             image.save(imagePath, image.format)
 
-            sessionDict[sessionKey]['imagePath'] = imagePath
+            sessionDict[sessionKey]['filename'] = filename
         else:
             user.statusCodes = user.statusCodes + ",419"
 
