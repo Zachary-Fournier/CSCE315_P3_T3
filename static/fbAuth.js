@@ -49,10 +49,17 @@ window.fbAsyncInit = function() {
                             // Get page id
                             redirectURL += "&" + response.data[0].access_token;
                             redirectURL += "&" + response.data[0].id;
+
+                            // Get ig
+                            FB.api('/' + response.data[0].id, function(response) {
+                                console.log(response.instagram_business_account.id);
+                            });
+
                             // Get name and send
                             FB.api('/me', function(response) {
                                 redirectURL += "&" + response.name;
-                                window.location.replace(redirectURL);
+                                console.log("Hehe");
+                                //window.location.replace(redirectURL);
                             });
                         }
                     }
@@ -60,6 +67,6 @@ window.fbAsyncInit = function() {
             } else {
                 console.log("Not logged in.");
             }
-        }, {scope: 'public_profile, pages_manage_posts, pages_read_engagement, pages_manage_metadata, pages_show_list'});
+        }, {scope: 'public_profile, pages_manage_posts, pages_read_engagement, pages_manage_metadata, pages_show_list, instagram_basic'});
     });
 }
