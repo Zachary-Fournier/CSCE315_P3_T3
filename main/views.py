@@ -238,7 +238,7 @@ def home(request):
         pass
     try:
         igAcct = InstagramAccount.objects.filter(baszlAcct=user).first()
-        igHandle = igAcct.username
+        igHandle = igAcct.handle
         igPosts = igAcct.numPosts
     except Exception as e:
         pass
@@ -256,11 +256,12 @@ def getFbandIGAccess(request):
     if not request.user.is_authenticated:
         return redirect("/login/")
 
-    token = request.GET.get('user_access_token')
-    __pageToken = request.GET.get('page_access_token')
-    __pageID = request.GET.get('page_id')
+    token = request.GET.get('user_access_token') # Fb
+    __pageToken = request.GET.get('page_access_token') # Fb
+    __pageID = request.GET.get('page_id') # Fb
     __igID = request.GET.get('instagram_id')
-    name = request.GET.get('name')
+    __igHandle = request.GET.get('instagram_username')
+    name = request.GET.get('name') # Fb
     
     # Save to Facebook account
     user = BaszlAccount.objects.get(baszlUser=request.user.username)
@@ -294,13 +295,14 @@ def getFbandIGAccess(request):
         if (len(user.instagramaccount_set.all()) == 0):
             __igID = fernet.encrypt(__igID.encode())
             __timestamp = fernet.extract_timestamp(__igID)
-            user.instagramaccount_set.create(accountID=__igID, timeStamp=__timestamp, numPosts=0)
+            user.instagramaccount_set.create(accountID=__igID, timeStamp=__timestamp, handle=__igHandle, numPosts=0)
         else:
             igAcct = InstagramAccount.objects.filter(baszlAcct=user).first()
             __igID = fernet.encrypt(__igID.encode())
             __timestamp = fernet.extract_timestamp(__igID)
             igAcct.accountID = __igID
             igAcct.timeStamp = __timestamp
+            igAcct.handle = __igHandle
             igAcct.save()
         
     except Exception as e:

@@ -13,44 +13,36 @@ const loginCallback = function() {
                 },
                 function (response) {
                     if (response && !response.error) {
-                        // Get page id
+                        // Get Facebook page id
                         redirectURL += "&page_access_token=" + response.data[0].access_token;
                         redirectURL += "&page_id=" + response.data[0].id;
 
-                        // Get ig
+                        // Get Instagram account ID
                         FB.api('/' + response.data[0].id,
                         { 
                             "fields": "instagram_business_account",
                             "access_token": userAccessToken
                         }, 
                         function(response) {
-                            redirectURL += "&instagram_id=" + response.instagram_business_account.id
+                            // Add Instagram account ID
+                            redirectURL += "&instagram_id=" + response.instagram_business_account.id;
 
                             FB.api(
                                 "/" + response.instagram_business_account.id,
                                 { "fields": "username"},
                                 function (response) {
                                   if (response && !response.error) {
-                                    console.log(response);
+                                    // Add username to arguments
+                                    redirectURL += "&instagram_username=" + response.username;
+
+                                    // Get name and send
+                                    FB.api('/me', function(response) {
+                                        redirectURL += "&name=" + response.name;
+                                        window.location.replace(redirectURL);
+                                    });
                                   }
                                 }
                             );
-                            /*
-                            FB.api('/' + response.instagram_business_account.id,
-                            {
-                                "fields": "username",
-                                "access_token": userAccessToken
-                            }, 
-                            function(response) {console.log(response);});
-                            */
-
-                            // Get name and send
-                            /*
-                            FB.api('/me', function(response) {
-                                redirectURL += "&name=" + response.name;
-                                window.location.replace(redirectURL);
-                            });
-                            */
                         });
                     }
                 }
