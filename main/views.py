@@ -1,5 +1,3 @@
-from logging import error
-from django.db import reset_queries
 from django.shortcuts import redirect, render
 from django.http import HttpResponse, HttpResponseRedirect
 import tweepy
@@ -15,7 +13,12 @@ from project3_backend.settings import BASE_DIR
 from .forms import ImageForm
 from PIL import Image
 import os
-from django.core.files.uploadedfile import SimpleUploadedFile
+import threading
+import asyncio
+from async_timeout import timeout
+import copy
+
+sessionDict = {}
 
 def getKey(string):
     kdf = PBKDF2HMAC(
@@ -25,6 +28,176 @@ def getKey(string):
         iterations=390000,
     )
     return base64.urlsafe_b64encode(kdf.derive(string.encode()))
+
+def makePostThread(request, sessionKey):
+    keyCopy = copy.deepcopy(sessionKey)
+    sessionInfo = sessionDict[sessionKey]
+    sessionDict[sessionKey]['fetched'] = 1
+
+    if sessionInfo['imagePath'] or sessionInfo['postText']:
+        errorCodes = ["", "", ""]
+        # Get Baszl user
+        user = BaszlAccount.objects.get(baszlUser=request.user.username)
+        fernet = Fernet(getKey(request.user.username))
+
+        # Something actually posted
+        if request.POST.get("facebook"):
+            fbAcct = FacebookAccount.objects.filter(baszlAcct=user).first()
+            timestamp = fbAcct.timeStamp
+            pageToken = fbAcct.pageToken
+            pageToken = fernet.decrypt_at_time(pageToken[2:-1].encode(), 604800, int(timestamp)).decode()
+
+            if sessionInfo['imagePath']:
+                try:
+                    fb = facebook.GraphAPI(access_token=pageToken)
+                    fb.put_photo(image=open(sessionInfo['imagePath'], 'rb'), message=sessionInfo['postText'])
+                    fbAcct.numPosts = fbAcct.numPosts + 1
+                    fbAcct.save()
+                except Exception as e:
+                    # Clean up
+                    try:
+                        os.remove(sessionInfo['imagePath'])
+                    except OSError as e:
+                        pass
+
+                    errorCodes[0] = "420"
+
+                # Clean up
+                try:
+                    os.remove(sessionInfo['imagePath'])
+                except OSError as e:
+                    errorCodes[0] = "420"
+
+            else:
+                try:
+                    fb = facebook.GraphAPI(access_token=pageToken)
+                    fb.put_object(parent_object='me', connection_name='feed', message=sessionInfo['postText'])
+                    fbAcct.numPosts = fbAcct.numPosts + 1
+                    fbAcct.save()
+                except Exception as e:
+                    errorCodes[0] = "420"
+
+        if request.POST.get("twitter"):
+            twtAcct = TwitterAccount.objects.filter(baszlAcct=user).first()
+            timestamp = twtAcct.timeStamp
+            accessToken = twtAcct.accessToken
+            key = fernet.decrypt_at_time(accessToken[2:-1].encode(), 604800, int(timestamp)).decode()
+            
+            accessSecret = twtAcct.accessSecret
+            secret = fernet.decrypt_at_time(accessSecret[2:-1].encode(), 604800, int(timestamp)).decode()
+
+            auth = tweepy.OAuthHandler(consumer_key, consumer_secret, 'https://baszl.herokuapp.com/twitteraccess/')
+            auth.set_access_token(key, secret)
+
+            if sessionInfo['imagePath']:
+                try:
+                    api=tweepy.API(auth)
+
+                    # Upload picture and get postId for media
+                    media = api.media_upload(sessionInfo['imagePath'])
+                    idList = list()
+                    idList.append(media.media_id)
+
+                    # Update status and associate the previously posted media
+                    api.update_status(status=sessionInfo['postText'], media_ids=idList)
+
+                    twtAcct.numPosts = twtAcct.numPosts + 1
+                    twtAcct.save()
+                except Exception as e:
+                    # Clean up
+                    try:
+                        os.remove(sessionInfo['imagePath'])
+                    except OSError as e:
+                        pass
+
+                    errorCodes[1] = "421"
+
+                # Clean up
+                try:
+                    os.remove(sessionInfo['imagePath'])
+                except OSError as e:
+                    errorCodes[1] = "421"
+
+            else:
+                # Standard Tweet
+                try:
+                    api=tweepy.API(auth)
+                    api.update_status(status=sessionInfo['postText'])
+                    twtAcct.numPosts = twtAcct.numPosts + 1
+                    twtAcct.save()
+                except Exception as e:
+                    errorCodes[1] = "421"
+
+                twtAcct.numPosts = twtAcct.numPosts + 1
+                twtAcct.save()
+
+        if request.POST.get("instagram"):
+            print("In instagram")
+            # Remove config folder if left behind
+            dir_path = BASE_DIR + "/config/"
+            try:
+                shutil.rmtree(dir_path)
+            except OSError as e:
+                pass
+
+            # Can't use try/except
+            bot = Bot()
+            igAcct = InstagramAccount.objects.filter(baszlAcct=user).first()
+            timestamp = igAcct.timeStamp
+            __password = igAcct.password
+            __password = fernet.decrypt_at_time(__password[2:-1].encode(), 604800, int(timestamp)).decode()
+            __username = igAcct.username
+
+            imagePath = BASE_DIR + "/uploads/baszl.jpg"
+            if sessionInfo['imagePath']:
+                imagePath = sessionInfo['imagePath']
+
+            bot.login(username=__username, password=__password, is_threaded=True)
+            status = None
+            while not(status):
+                status = bot.upload_photo(imagePath, caption=sessionInfo['postText'])
+
+            print(status)
+            
+            # Clean up
+            try:
+                shutil.rmtree(dir_path)
+            except OSError as e:
+                errorCodes[2] = "422"
+
+            if sessionInfo['imagePath']:
+                try:
+                    os.remove(imagePath)
+                except OSError as e:
+                    errorCodes[2] = "422"
+            else:
+                try:
+                    os.rename(imagePath + ".REMOVE_ME", imagePath)
+                except OSError as e:
+                    errorCodes[2] = "422"
+        # Update any errors
+        errorString = user.statusCodes.split(",")
+        for code in errorCodes:
+            if code:
+                errorString += "," + code
+
+        user.statuCodes = errorString
+        user.save()
+
+async def postAwaitable(request, sessionKey):
+    print("Starting makePost Thread")
+    postThread = threading.Thread(target=makePostThread, args=(request, sessionKey,))
+    postThread.start()
+
+
+async def postTimeoutWrapper(request, sessionKey):
+    # Timeout after a minute
+    async with timeout(60) as contextManager:
+        print("Starting postAwaitable")
+        await postAwaitable(request, sessionKey)
+    if contextManager.expired:
+        user = BaszlAccount.objects.get(baszlUser=request.user.username)
+        user.statusCodes = user.statusCodes + ",423"
 
 consumer_key = '1OT7fMp7nItZHuuXNwv0duBs2'
 consumer_secret = 'zUAsq7LIlNPzxPOuIvWWQ9uqGoG1YUJ12uD7qzK5obWmebViVr'
@@ -38,6 +211,19 @@ def home(request):
         return HttpResponseRedirect("/login/")
 
     user = BaszlAccount.objects.get(baszlUser=request.user.username)
+    baszlHandle = user.baszlUser
+
+    statusCodes = user.statusCodes
+    codes = statusCodes.split(",")
+    numErrors = 0
+    for code in codes:
+        if code:
+            if code[0] == "4":
+                numErrors += 1
+    # Reset codes
+    user.statusCodes = ""
+    user.save()
+
     try:
         fbAcct = FacebookAccount.objects.filter(baszlAcct=user).first()
         fbHandle = fbAcct.handle
@@ -58,7 +244,7 @@ def home(request):
         pass
 
     iform = ImageForm()
-    return render(request, "main/dashboard.html", {"iform":iform, "twtHandle":twtHandle, "igHandle":igHandle, "fbHandle":fbHandle, "numFbPosts":fbPosts, "numIgPosts":igPosts, "numTwtPosts":twtPosts})
+    return render(request, "main/dashboard.html", {"iform":iform, "baszlHandle":baszlHandle, "twtHandle":twtHandle, "igHandle":igHandle, "fbHandle":fbHandle, "numFbPosts":fbPosts, "numIgPosts":igPosts, "numTwtPosts":twtPosts, "numErrors":numErrors})
         
 def platformsLogin(request):
     if not request.user.is_authenticated:
@@ -203,211 +389,34 @@ def getInstagramAccess(request):
 def makePost(request):
     if not request.user.is_authenticated:
         return redirect("/login/")
-    
+
+    user = BaszlAccount.objects.get(baszlUser=request.user.username)
+    sessionKey = base64.urlsafe_b64encode(os.urandom(16)).decode()
+    sessionDict[sessionKey] = {"fetched": 0,"imagePath":"", "postText":""}
+
+    if request.FILES:
+        iform = ImageForm(request.POST.get('img'), request.FILES)
+        if iform.is_valid():
+            image_field = iform.cleaned_data['img']
+            image = Image.open(image_field)
+            filename = base64.urlsafe_b64encode(os.urandom(8)).decode() + "." + image.format
+
+            imagePath = BASE_DIR + "/uploads/" + filename
+            image.save(imagePath, image.format)
+
+            sessionDict[sessionKey]['imagePath'] = imagePath
+        else:
+            user.statusCodes = user.statusCodes + ",419"
+
+    if request.POST.get("postText"):
+        sessionDict[sessionKey]['postText'] = request.POST.get("postText")
+
     if request.method == "POST":
-        postImage = False
-        postMessage = False
-        messagePost = ""
-        iform = None
-        if request.FILES:
-            postImage = True
-            iform = ImageForm(request.POST.get('img'), request.FILES)
-        if request.POST.get("postText"):
-            postMessage = True
-            messagePost = request.POST.get("postText")
+        print("Starting postTimeoutWrapper")
+        asyncio.run(postTimeoutWrapper(request, sessionKey))
 
-        if postMessage or postImage:
-            noPost = True
-            # Get Baszl user
-            user = BaszlAccount.objects.get(baszlUser=request.user.username)
-            fernet = Fernet(getKey(request.user.username))
-
-            # Something actually posted
-            if request.POST.get("facebook"):
-                fbAcct = FacebookAccount.objects.filter(baszlAcct=user).first()
-                timestamp = fbAcct.timeStamp
-                pageToken = fbAcct.pageToken
-                pageToken = fernet.decrypt_at_time(pageToken[2:-1].encode(), 604800, int(timestamp)).decode()
-
-                if postImage:
-                    imagePath = BASE_DIR + "/uploads/"
-                    if iform.is_valid():
-                        image_field = iform.cleaned_data['img']
-                        image = Image.open(image_field)
-                        filename = base64.urlsafe_b64encode(os.urandom(8)).decode() + "." + image.format
-
-                        imagePath += filename
-                        image.save(imagePath, image.format)
-                    else:
-                        return HttpResponse("<p>Error getting image. Click <a href=\"/\">here</a> to return.</p>")
-
-                    try:
-                        fb = facebook.GraphAPI(access_token=pageToken)
-                        fb.put_photo(image=open(imagePath, 'rb'), message=messagePost)
-                        fbAcct.numPosts = fbAcct.numPosts + 1
-                        fbAcct.save()
-                    except Exception as e:
-                        # Clean up
-                        try:
-                            os.remove(imagePath)
-                        except OSError as e:
-                            return HttpResponse("<p>Error deleting uploaded image.</p>")
-
-                        return HttpResponse("<p>Error posting photo to Facebook. Click <a href=\"/\">here</a> to return</p>")
-
-                    # Clean up
-                    try:
-                        os.remove(imagePath)
-                    except OSError as e:
-                        return HttpResponse("<p>Error deleting uploaded image.</p>")
-
-                else:
-                    try:
-                        fb = facebook.GraphAPI(access_token=pageToken)
-                        fb.put_object(parent_object='me', connection_name='feed', message=messagePost)
-                        fbAcct.numPosts = fbAcct.numPosts + 1
-                        fbAcct.save()
-                    except Exception as e:
-                        return HttpResponse("<p>Error posting to Facebook. Click <a href=\"/\">here</a> to return</p>")
-
-            if request.POST.get("twitter"):
-                twtAcct = TwitterAccount.objects.filter(baszlAcct=user).first()
-                timestamp = twtAcct.timeStamp
-                accessToken = twtAcct.accessToken
-                key = fernet.decrypt_at_time(accessToken[2:-1].encode(), 604800, int(timestamp)).decode()
-                
-                accessSecret = twtAcct.accessSecret
-                secret = fernet.decrypt_at_time(accessSecret[2:-1].encode(), 604800, int(timestamp)).decode()
-
-                auth = tweepy.OAuthHandler(consumer_key, consumer_secret, 'https://baszl.herokuapp.com/twitteraccess/')
-                auth.set_access_token(key, secret)
-
-                if postImage:
-                    imagePath = BASE_DIR + "/uploads/"
-                    if iform.is_valid():
-                        image_field = iform.cleaned_data['img']
-                        image = Image.open(image_field)
-                        filename = base64.urlsafe_b64encode(os.urandom(8)).decode() + "." + image.format
-
-                        imagePath += filename
-                        image.save(imagePath, image.format)
-                    else:
-                        return HttpResponse("<p>Error getting image. Click <a href=\"/\">here</a> to return.</p>")
-
-                    try:
-                        api=tweepy.API(auth)
-
-                        # Upload picture and get postId for media
-                        media = api.media_upload(imagePath)
-                        idList = list()
-                        idList.append(media.media_id)
-
-                        # Update status and associate the previously posted media
-                        api.update_status(status=messagePost, media_ids=idList)
-
-                        twtAcct.numPosts = twtAcct.numPosts + 1
-                        twtAcct.save()
-                    except Exception as e:
-                        # Clean up
-                        try:
-                            os.remove(imagePath)
-                        except OSError as e:
-                            return HttpResponse("<p>Error deleting uploaded image.</p>")
-
-                        return HttpResponse("<p>Error posting to Twitter. Click <a href=\"/\">here</a> to return</p>" + str(media.media_id))
-
-                    # Clean up
-                    try:
-                        os.remove(imagePath)
-                    except OSError as e:
-                        return HttpResponse("<p>Error deleting uploaded image.</p>")
-
-                else:
-                    # Standard Tweet
-                    try:
-                        api=tweepy.API(auth)
-                        api.update_status(status=messagePost)
-                        twtAcct.numPosts = twtAcct.numPosts + 1
-                        twtAcct.save()
-                    except Exception as e:
-                        return HttpResponse("<p>Error posting to Twitter. Click <a href=\"/\">here</a> to return</p>")
-
-                    twtAcct.numPosts = twtAcct.numPosts + 1
-                    twtAcct.save()
-
-            if request.POST.get("instagram"):
-                # Remove config folder
-                dir_path = BASE_DIR + "/config/"
-                try:
-                    shutil.rmtree(dir_path)
-                except OSError as e:
-                    pass
-
-                # Can't use try/except
-                bot = Bot()
-                igAcct = InstagramAccount.objects.filter(baszlAcct=user).first()
-                timestamp = igAcct.timeStamp
-                __password = igAcct.password
-                __password = fernet.decrypt_at_time(__password[2:-1].encode(), 604800, int(timestamp)).decode()
-                __username = igAcct.username
-
-                imagePath = BASE_DIR + "/uploads/baszl.jpg"
-                if postImage:
-                    if iform.is_valid():
-                        image_field = iform.cleaned_data['img']
-                        image = Image.open(image_field)
-                        filename = base64.urlsafe_b64encode(os.urandom(8)).decode() + "." + image.format
-
-                        imagePath = BASE_DIR + "/uploads/" + filename
-                        image.save(imagePath, image.format)
-                    else:
-                        return HttpResponse("<p>Error getting image. Click <a href=\"/\">here</a> to return.</p>")
-
-                bot.login(username=__username, password=__password, is_threaded=True)
-                bot.upload_photo(imagePath, caption=messagePost)
-
-                # Clean up
-                errorMsg = ""
-                try:
-                    shutil.rmtree(dir_path)
-                except OSError as e:
-                    errorMsg = "<p>Error deleting config folder.</p>"
-
-                if postImage:
-                    try:
-                        os.remove(imagePath)
-                    except OSError as e:
-                        errorMsg += "<p>Error deleting uploaded image - " + imagePath + ".</p>"
-                else:
-                    try:
-                        os.rename(imagePath + ".REMOVE_ME", imagePath)
-                    except OSError as e:
-                        errorMsg += "<p>Error renaming default image</p>"
-                
-                if errorMsg:
-                    errorMsg += "<p>Click <a href=\"/\">here</a> to return.</p>"
-                    return HttpResponse(errorMsg)
+    while sessionDict[sessionKey]['fetched'] == 0:
+        continue
+    print("Leaving...")
 
     return redirect("/")
-
-def test(request):
-    if request.method == "POST":
-        print(request.POST)
-        chk = request.POST.get('chk')
-        print(chk)
-        if request.FILES:
-            iform = ImageForm(request.POST.get('img'), request.FILES)
-            if iform.is_valid():
-                image_field = iform.cleaned_data['img']
-                image = Image.open(image_field)
-
-                print("Saving...")
-                print(BASE_DIR + "\static\imgToPost." + image.format.lower())
-                image.save(BASE_DIR + "\static\imgToPost." + image.format, image.format)
-
-        return redirect("/test/")
-            
-    else:
-        iform = ImageForm()
-
-        return render(request, "main/test.html", {"iform":iform})

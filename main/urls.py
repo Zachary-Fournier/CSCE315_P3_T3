@@ -10,5 +10,4 @@ urlpatterns = [
     path("getTwitterToken/", views.getTwitterToken, name="getTwitterToken"),
     path("twitteraccess/", views.getTwitterAccess, name="getTwitterAccess"),
     path("instagramAccess/", views.getInstagramAccess, name="getInstagramAccess"),
-    path("test/", views.test, name="test"),
 ]

@@ -5,6 +5,7 @@ import tweepy
 
 class BaszlAccount(models.Model):
     baszlUser = models.CharField(max_length=200)
+    statusCodes = models.TextField(default="")
 
 class InstagramAccount(models.Model):
     baszlAcct = models.ForeignKey(BaszlAccount, on_delete=models.CASCADE)

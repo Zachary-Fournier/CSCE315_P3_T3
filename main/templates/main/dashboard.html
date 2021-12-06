@@ -20,10 +20,10 @@
         <div class="col-xl-5">
             <div id = "50" class="card">
                 <div class="card-body">
-                    <div class="d-flex align-items-start">
+                    <div class="d-flex align-items-center">
                         <img id = 'profilePic' src="/static/defaultProfilePic.jpg" class="rounded-circle avatar-lg img-thumbnail" alt="profile-image">
-                        <div class="w-100 ms-3">
-                            <h4 id = "1" class="my-0">Your Profile</h4>
+                        <div class="ms-3">
+                            <h2 id="profileHeader" class="gradient_text">{{baszlHandle}}</h2>
                         </div>
                     </div>
 
@@ -137,3 +137,9 @@
 
 </div>
 {% endblock %}
+
+{% if numErrors == 1 %}
+<script>alert("Post to Instagram unsuccessful.")</script>
+{% elif numErrors > 1 %}
+<script>alert("Multiple posts to Instagram unsuccessful.")</script>
+{% endif %}

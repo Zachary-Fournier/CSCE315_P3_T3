@@ -308,6 +308,18 @@ height: 20px;
 animation: spin 1s linear infinite;
 }
 
+.gradient_text {
+  font-weight: bold;
+  background: -webkit-linear-gradient(#0e84eb, #a1d2fd);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+#profileHeader {
+  font-size: 2.25rem;
+}
+
 @keyframes spin {
 0% { transform: rotate(0deg); }
 100% { transform: rotate(360deg); }
