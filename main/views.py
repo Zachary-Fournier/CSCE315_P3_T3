@@ -179,7 +179,7 @@ def makePostThread(request, sessionKey):
             if code:
                 errorString += "," + code
 
-        user.statuCodes = errorString
+        user.statusCodes = errorString
         user.save()
 
     del sessionDict[keyCopy]
