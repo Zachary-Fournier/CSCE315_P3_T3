@@ -132,7 +132,6 @@ def makePostThread(request, sessionKey):
                 twtAcct.save()
 
         if request.POST.get("instagram"):
-            print("In instagram")
             # Remove config folder if left behind
             dir_path = BASE_DIR + "/config/"
             try:
@@ -153,7 +152,10 @@ def makePostThread(request, sessionKey):
                 imagePath = sessionInfo['imagePath']
 
             bot.login(username=__username, password=__password, force=True, is_threaded=True)
-            bot.upload_photo(imagePath, caption=sessionInfo['postText'])
+            try:
+                bot.upload_photo(imagePath, caption=sessionInfo['postText'])
+            except Exception as e:
+                pass
             
             # Clean up
             try:
@@ -183,14 +185,12 @@ def makePostThread(request, sessionKey):
     del sessionDict[keyCopy]
 
 async def postAwaitable(request, sessionKey):
-    print("Starting makePost Thread")
     postThread = threading.Thread(target=makePostThread, args=(request, sessionKey,))
     postThread.start()
 
 async def postTimeoutWrapper(request, sessionKey):
     # Timeout after a minute
     async with timeout(60) as contextManager:
-        print("Starting postAwaitable")
         await postAwaitable(request, sessionKey)
     if contextManager.expired:
         user = BaszlAccount.objects.get(baszlUser=request.user.username)
@@ -409,11 +409,9 @@ def makePost(request):
         sessionDict[sessionKey]['postText'] = request.POST.get("postText")
 
     if request.method == "POST":
-        print("Starting postTimeoutWrapper")
         asyncio.run(postTimeoutWrapper(request, sessionKey))
 
     while sessionDict[sessionKey]['fetched'] == 0:
         continue
-    print("Leaving...")
 
     return redirect("/")

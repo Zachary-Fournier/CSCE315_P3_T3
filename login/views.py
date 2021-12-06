@@ -21,10 +21,8 @@ def register(request):
                 return redirect("/platformsLogin/")
                 
             except Exception as e:
-                print("Couldn't register new account")
                 return redirect("/login/1")
         else:
-            print("Invalid form")
             return redirect("/login/2")
   
     return redirect("/login/")
@@ -42,11 +40,9 @@ def login_view(request, errCode=0):
     else:
         if errCode == 1:
             # Couldn't register
-            print("Error 1")
             errorMsg = "Couldn't save new account."
         elif errCode == 2:
             # Invalid form
-            print("Error 2")
             errorMsg = "Invalid registration form."
 
     form = AuthenticationForm()
