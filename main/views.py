@@ -123,9 +123,6 @@ def makePostThread(request, sessionKey):
                 except Exception as e:
                     errorCodes[1] = "421"
 
-                twtAcct.numPosts = twtAcct.numPosts + 1
-                twtAcct.save()
-
         if sessionInfo['ig']:
             # Get user access token and ig ID
             fbAcct = FacebookAccount.objects.filter(baszlAcct=user).first()
@@ -147,7 +144,7 @@ def makePostThread(request, sessionKey):
             imagePath += filename
 
             try:
-                #Post the Image
+                # Upload pictur to media container
                 apiUrl = 'https://graph.facebook.com/v12.0/' + __igID
                 imageUrl = 'http://baszl.herokuapp.com/getPhoto?filename=' + filename
                 payload = {
@@ -157,6 +154,7 @@ def makePostThread(request, sessionKey):
                 }
                 r = requests.post(apiUrl + '/media', data=payload)
 
+                # Publish upload
                 result = json.loads(r.text)
                 if 'id' in result:
                     containerID = result['id']
@@ -166,6 +164,9 @@ def makePostThread(request, sessionKey):
                     }
                     r = requests.post(apiUrl + '/media_publish', data=second_payload)
 
+                # Track progress
+                igAcct.numPosts = igAcct.numPosts + 1
+                igAcct.save()
             except Exception as e:
                 pass
         
