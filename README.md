@@ -1,6 +1,10 @@
 # CSCE315_P3_T3
 webapp address: https://baszl.herokuapp.com/
 
+this is the project for TAMU CSCE_315 Team #30
+
+SCRUM meeting timestamps were updated on the tamu github: https://github.tamu.edu/zfournier/CSCE315_Project3_Team30
+
 Run Django: pipenv shell
 	    python3 manage.py runserver 
 
