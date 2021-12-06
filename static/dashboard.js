@@ -80,9 +80,6 @@ function switchTheme() {
         var style = window.getComputedStyle(el, null).getPropertyValue('color');
         el.style.color = "white";
 
-        console.log("Toggling dark for preview box");
-        document.querySelector(".story-box").style.backgroundColor = "#151618";
-
         return;
     } 
 
@@ -104,8 +101,6 @@ function switchTheme() {
     var el = document.getElementById("fontsettingcolor");
     var style = window.getComputedStyle(el, null).getPropertyValue('color');
     el.style.color = "black";
-
-    document.querySelector(".story-box").style.backgroundColor = "#ecf2f5";
 }
 
 function post() {
@@ -156,7 +151,7 @@ function loadFile(file) {
 function changeFontSize() {
     var el = document.getElementById("1");
     var style = window.getComputedStyle(el, null).getPropertyValue('font-size');
-    if (parseFloat(style) == 24) {
+    if (parseFloat(style) == 36) {
         localStorage.setItem('fontSetting', 'big');
     } else {
         localStorage.setItem('fontSetting', 'small');

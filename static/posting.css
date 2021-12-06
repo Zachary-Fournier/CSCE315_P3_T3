@@ -287,7 +287,6 @@ font-family: Verdana, sans-serif;
   position: relative;
   left: 50%;
   transform: translateX(-50%);
-  background-color: #ecf2f5;
   padding: 25px;
   border-radius: 15px;
 }
@@ -316,8 +315,8 @@ animation: spin 1s linear infinite;
   -webkit-text-fill-color: transparent;
 }
 
-#profileHeader {
-  font-size: 2.25rem;
+h2 {
+  font-size: 36px;
 }
 
 @keyframes spin {
