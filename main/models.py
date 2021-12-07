@@ -47,8 +47,8 @@ class TwitterAccount(models.Model):
     numPosts = models.IntegerField(default=0)
 
     def __str__(self):
-        string = "<p>Access Token: " + self.accessToken.decode() + "</p>"
-        string += "<p>Access Secret: " + self.accessSecret.decode() + "</p>"
+        string = "<p>Access Token: " + self.accessToken + "</p>"
+        string += "<p>Access Secret: " + self.accessSecret + "</p>"
         string += "<p>Timestamp: " + str(self.timeStamp) + "</p>"
         string += "<p>Handle: " + self.handle + "</p>"
 

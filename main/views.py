@@ -62,6 +62,10 @@ def makePostThread(request, sessionKey):
         # Something actually posted
         if sessionInfo['fb']:
             fbAcct = FacebookAccount.objects.filter(baszlAcct=user).first()
+            # Check if account set up
+            if not fbAcct:
+                print("No account")
+                return
             timestamp = fbAcct.timeStamp
             pageToken = fbAcct.pageToken
             pageToken = fernet.decrypt_at_time(pageToken[2:-1].encode(), 604800, int(timestamp)).decode()
@@ -86,6 +90,10 @@ def makePostThread(request, sessionKey):
 
         if sessionInfo['twt']:
             twtAcct = TwitterAccount.objects.filter(baszlAcct=user).first()
+            # Check if account set up
+            if not twtAcct:
+                print("No account")
+                return
             timestamp = twtAcct.timeStamp
             accessToken = twtAcct.accessToken
             key = fernet.decrypt_at_time(accessToken[2:-1].encode(), 604800, int(timestamp)).decode()
@@ -126,11 +134,19 @@ def makePostThread(request, sessionKey):
         if sessionInfo['ig']:
             # Get user access token and ig ID
             fbAcct = FacebookAccount.objects.filter(baszlAcct=user).first()
+            # Check if account set up
+            if not fbAcct:
+                print("No account")
+                return
             timestamp = fbAcct.timeStamp
             accessToken = fbAcct.accessToken
             accessToken = fernet.decrypt_at_time(accessToken[2:-1].encode(), 604800, int(timestamp)).decode()
 
             igAcct = InstagramAccount.objects.filter(baszlAcct=user).first()
+            # Check if account set up
+            if not igAcct:
+                print("No account")
+                return
             timestamp = igAcct.timeStamp
             __igID = igAcct.accountID
             __igID = fernet.decrypt_at_time(__igID[2:-1].encode(), 604800, int(timestamp)).decode()
@@ -381,7 +397,7 @@ def makePost(request):
 
     user = BaszlAccount.objects.get(baszlUser=request.user.username)
     sessionKey = base64.urlsafe_b64encode(os.urandom(16)).decode()
-    sessionDict[sessionKey] = {"fetched": 0,"imagePath":"", "postText":"", "fb":False, "twt":False, "ig":False}
+    sessionDict[sessionKey] = {"fetched": 0,"filename":"", "postText":"", "fb":False, "twt":False, "ig":False}
 
     if request.POST.get("facebook"):
         sessionDict[sessionKey]['fb'] = True
