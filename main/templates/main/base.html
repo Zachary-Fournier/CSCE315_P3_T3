@@ -1,6 +1,6 @@
 {% extends 'main/structure.html' %}
 
-{% block navBar %}
+{% block navStyle %}
 <style>
 nav {
     width: 100%;
@@ -38,12 +38,9 @@ nav a:hover {
     font-family:Arial, Helvetica, sans-serif;
 }
 
+.focusedNav {
+    color: rgb(11, 44, 71);
+}
+
 </style>
-<nav>
-    <ul>
-        <li class = "title"><a href="/platformsLogin/">Hub Auth</a></li>
-        <li class = "title"><a href="/">Dashboard</a></li>
-        <li class = "title"><a href="/logout/">Logout</a></li>
-    </ul>
-</nav>
 {% endblock %}

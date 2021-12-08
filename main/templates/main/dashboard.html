@@ -14,6 +14,16 @@
 <script src="/static/dashboard.js" async></script>
 {% endblock %}
 
+{% block navBar %}
+<nav>
+    <ul>
+        <li class = "title"><a href="/platformsLogin/">Hub Auth</a></li>
+        <li class = "title"><a class="focusedNav" href="/">Dashboard</a></li>
+        <li class = "title"><a href="/logout/">Logout</a></li>
+    </ul>
+</nav>
+{% endblock %}
+
 {% block content %}
 <div class="container">
     <div class="row">
