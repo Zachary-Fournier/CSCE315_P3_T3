@@ -19,6 +19,10 @@ if os.path.isfile(dotenv_file):
     dotenv.load_dotenv(dotenv_file)
     skipSSL = True
     DEBUG = True
+else:
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = True
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
@@ -27,7 +31,6 @@ if os.path.isfile(dotenv_file):
 SECRET_KEY = 'django-insecure-*sz5b+^zr59fe)g^djiug7%9t-v_=fo6^o%-mm-(&_f3ic=&^6'
 
 ALLOWED_HOSTS = ['*',]
-SECURE_SSL_REDIRECT = True
 
 # Application definition
 
