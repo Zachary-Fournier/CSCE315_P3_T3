@@ -19,10 +19,6 @@ if os.path.isfile(dotenv_file):
     dotenv.load_dotenv(dotenv_file)
     skipSSL = True
     DEBUG = True
-else:
-    SESSION_COOKIE_SECURE = False
-    CSRF_COOKIE_SECURE = False
-    SECURE_SSL_REDIRECT = False
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/

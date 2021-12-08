@@ -162,7 +162,7 @@ def makePostThread(request, sessionKey):
             try:
                 # Upload pictur to media container
                 apiUrl = 'https://graph.facebook.com/v12.0/' + __igID
-                imageUrl = 'http://baszl.herokuapp.com/getPhoto?filename=' + filename
+                imageUrl = 'https://baszl.herokuapp.com/getPhoto?filename=' + filename
                 payload = {
                     'image_url': imageUrl,
                     'caption': sessionInfo['postText'],
