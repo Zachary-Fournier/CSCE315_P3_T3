@@ -243,3 +243,20 @@ span.psw {
      width: 100%;
   }
 }
+
+/* -------------------------------------------- */
+/*                  Responsive                  */
+/* -------------------------------------------- */
+@media only screen and (max-width: 700px) {
+  body {
+    display: flex;
+    flex-direction: column;
+  }
+
+  section {
+    float:left;
+    width: 100%;
+    height: calc(100vh - 35px);
+    position: relative;
+  }
+}
