@@ -25,6 +25,7 @@ body{
 .appName{
     color: white;
     padding-bottom: 5%;
+	margin-top: 30px;
 }
 .login{
 	position: relative;
