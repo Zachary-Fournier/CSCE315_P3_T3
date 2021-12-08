@@ -27,7 +27,7 @@ if os.path.isfile(dotenv_file):
 SECRET_KEY = 'django-insecure-*sz5b+^zr59fe)g^djiug7%9t-v_=fo6^o%-mm-(&_f3ic=&^6'
 
 ALLOWED_HOSTS = ['*',]
-
+SECURE_SSL_REDIRECT = True
 
 # Application definition
 
