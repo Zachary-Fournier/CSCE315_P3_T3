@@ -63,63 +63,59 @@ def makePostThread(request, sessionKey):
         if sessionInfo['fb']:
             fbAcct = FacebookAccount.objects.filter(baszlAcct=user).first()
             # Check if account set up
-            if not fbAcct:
-                print("No account")
-                return
-            timestamp = fbAcct.timeStamp
-            pageToken = fbAcct.pageToken
-            pageToken = fernet.decrypt_at_time(pageToken[2:-1].encode(), 604800, int(timestamp)).decode()
+            if fbAcct:
+                timestamp = fbAcct.timeStamp
+                pageToken = fbAcct.pageToken
+                pageToken = fernet.decrypt_at_time(pageToken[2:-1].encode(), 604800, int(timestamp)).decode()
 
-            if sessionInfo['filename']:
-                try:
-                    fb = facebook.GraphAPI(access_token=pageToken)
-                    fb.put_photo(image=open(BASE_DIR + "/uploads/" + sessionInfo['filename'], 'rb'), message=sessionInfo['postText'])
-                    fbAcct.numPosts = fbAcct.numPosts + 1
-                    fbAcct.save()
-                except Exception as e:
-                    errorCodes[0] = "420"
+                if sessionInfo['filename']:
+                    try:
+                        fb = facebook.GraphAPI(access_token=pageToken)
+                        fb.put_photo(image=open(BASE_DIR + "/uploads/" + sessionInfo['filename'], 'rb'), message=sessionInfo['postText'])
+                        fbAcct.numPosts = fbAcct.numPosts + 1
+                        fbAcct.save()
+                    except Exception as e:
+                        errorCodes[0] = "420"
 
-            else:
-                try:
-                    fb = facebook.GraphAPI(access_token=pageToken)
-                    fb.put_object(parent_object='me', connection_name='feed', message=sessionInfo['postText'])
-                    fbAcct.numPosts = fbAcct.numPosts + 1
-                    fbAcct.save()
-                except Exception as e:
-                    errorCodes[0] = "420"
+                else:
+                    try:
+                        fb = facebook.GraphAPI(access_token=pageToken)
+                        fb.put_object(parent_object='me', connection_name='feed', message=sessionInfo['postText'])
+                        fbAcct.numPosts = fbAcct.numPosts + 1
+                        fbAcct.save()
+                    except Exception as e:
+                        errorCodes[0] = "420"
 
         if sessionInfo['twt']:
             twtAcct = TwitterAccount.objects.filter(baszlAcct=user).first()
             # Check if account set up
-            if not twtAcct:
-                print("No account")
-                return
-            timestamp = twtAcct.timeStamp
-            accessToken = twtAcct.accessToken
-            key = fernet.decrypt_at_time(accessToken[2:-1].encode(), 604800, int(timestamp)).decode()
-            
-            accessSecret = twtAcct.accessSecret
-            secret = fernet.decrypt_at_time(accessSecret[2:-1].encode(), 604800, int(timestamp)).decode()
+            if twtAcct:
+                timestamp = twtAcct.timeStamp
+                accessToken = twtAcct.accessToken
+                key = fernet.decrypt_at_time(accessToken[2:-1].encode(), 604800, int(timestamp)).decode()
+                
+                accessSecret = twtAcct.accessSecret
+                secret = fernet.decrypt_at_time(accessSecret[2:-1].encode(), 604800, int(timestamp)).decode()
 
-            auth = tweepy.OAuthHandler(consumer_key, consumer_secret, 'https://baszl.herokuapp.com/twitteraccess/')
-            auth.set_access_token(key, secret)
+                auth = tweepy.OAuthHandler(consumer_key, consumer_secret, 'https://baszl.herokuapp.com/twitteraccess/')
+                auth.set_access_token(key, secret)
 
-            if sessionInfo['filename']:
-                try:
-                    api=tweepy.API(auth)
+                if sessionInfo['filename']:
+                    try:
+                        api=tweepy.API(auth)
 
-                    # Upload picture and get postId for media
-                    media = api.media_upload(BASE_DIR + "/uploads/" + sessionInfo['filename'])
-                    idList = list()
-                    idList.append(media.media_id)
+                        # Upload picture and get postId for media
+                        media = api.media_upload(BASE_DIR + "/uploads/" + sessionInfo['filename'])
+                        idList = list()
+                        idList.append(media.media_id)
 
-                    # Update status and associate the previously posted media
-                    api.update_status(status=sessionInfo['postText'], media_ids=idList)
+                        # Update status and associate the previously posted media
+                        api.update_status(status=sessionInfo['postText'], media_ids=idList)
 
-                    twtAcct.numPosts = twtAcct.numPosts + 1
-                    twtAcct.save()
-                except Exception as e:
-                    errorCodes[1] = "421"
+                        twtAcct.numPosts = twtAcct.numPosts + 1
+                        twtAcct.save()
+                    except Exception as e:
+                        errorCodes[1] = "421"
 
             else:
                 # Standard Tweet
@@ -134,57 +130,49 @@ def makePostThread(request, sessionKey):
         if sessionInfo['ig']:
             # Get user access token and ig ID
             fbAcct = FacebookAccount.objects.filter(baszlAcct=user).first()
-            # Check if account set up
-            if not fbAcct:
-                print("No account")
-                return
-            timestamp = fbAcct.timeStamp
-            accessToken = fbAcct.accessToken
-            accessToken = fernet.decrypt_at_time(accessToken[2:-1].encode(), 604800, int(timestamp)).decode()
-
             igAcct = InstagramAccount.objects.filter(baszlAcct=user).first()
-            # Check if account set up
-            if not igAcct:
-                print("No account")
-                return
-            timestamp = igAcct.timeStamp
-            __igID = igAcct.accountID
-            __igID = fernet.decrypt_at_time(__igID[2:-1].encode(), 604800, int(timestamp)).decode()
-            
-            #__igID = 17841450558552750
+            # Check if accounts are set up
+            if fbAcct and igAcct:
+                timestamp = fbAcct.timeStamp
+                accessToken = fbAcct.accessToken
+                accessToken = fernet.decrypt_at_time(accessToken[2:-1].encode(), 604800, int(timestamp)).decode()
 
-            imagePath = BASE_DIR + "/uploads/"
-            filename = "baszl.jpg"
-            if sessionInfo['filename']:
-                filename = sessionInfo['filename']
-            imagePath += filename
+                timestamp = igAcct.timeStamp
+                __igID = igAcct.accountID
+                __igID = fernet.decrypt_at_time(__igID[2:-1].encode(), 604800, int(timestamp)).decode()
 
-            try:
-                # Upload pictur to media container
-                apiUrl = 'https://graph.facebook.com/v12.0/' + __igID
-                imageUrl = 'https://baszl.herokuapp.com/getPhoto?filename=' + filename
-                payload = {
-                    'image_url': imageUrl,
-                    'caption': sessionInfo['postText'],
-                    'access_token': accessToken
-                }
-                r = requests.post(apiUrl + '/media', data=payload)
+                imagePath = BASE_DIR + "/uploads/"
+                filename = "baszl.jpg"
+                if sessionInfo['filename']:
+                    filename = sessionInfo['filename']
+                imagePath += filename
 
-                # Publish upload
-                result = json.loads(r.text)
-                if 'id' in result:
-                    containerID = result['id']
-                    second_payload = {
-                        'creation_id': containerID,
+                try:
+                    # Upload pictur to media container
+                    apiUrl = 'https://graph.facebook.com/v12.0/' + __igID
+                    imageUrl = 'https://baszl.herokuapp.com/getPhoto?filename=' + filename
+                    payload = {
+                        'image_url': imageUrl,
+                        'caption': sessionInfo['postText'],
                         'access_token': accessToken
                     }
-                    r = requests.post(apiUrl + '/media_publish', data=second_payload)
+                    r = requests.post(apiUrl + '/media', data=payload)
 
-                # Track progress
-                igAcct.numPosts = igAcct.numPosts + 1
-                igAcct.save()
-            except Exception as e:
-                pass
+                    # Publish upload
+                    result = json.loads(r.text)
+                    if 'id' in result:
+                        containerID = result['id']
+                        second_payload = {
+                            'creation_id': containerID,
+                            'access_token': accessToken
+                        }
+                        r = requests.post(apiUrl + '/media_publish', data=second_payload)
+
+                    # Track progress
+                    igAcct.numPosts = igAcct.numPosts + 1
+                    igAcct.save()
+                except Exception as e:
+                    pass
         
         # Remove image if it exists for Facebook and Twitter
         if sessionInfo['filename'] and not sessionInfo['ig']:
