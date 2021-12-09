@@ -117,15 +117,15 @@ def makePostThread(request, sessionKey):
                     except Exception as e:
                         errorCodes[1] = "421"
 
-            else:
-                # Standard Tweet
-                try:
-                    api=tweepy.API(auth)
-                    api.update_status(status=sessionInfo['postText'])
-                    twtAcct.numPosts = twtAcct.numPosts + 1
-                    twtAcct.save()
-                except Exception as e:
-                    errorCodes[1] = "421"
+                else:
+                    # Standard Tweet
+                    try:
+                        api=tweepy.API(auth)
+                        api.update_status(status=sessionInfo['postText'])
+                        twtAcct.numPosts = twtAcct.numPosts + 1
+                        twtAcct.save()
+                    except Exception as e:
+                        errorCodes[1] = "421"
 
         if sessionInfo['ig']:
             # Get user access token and ig ID
